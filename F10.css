@@ -72,7 +72,7 @@ header {
 .top-wrappers {
     display: flex;
     margin: 50px 100px;
-    background-image: url(http://demo.amytheme.com/movie/demo/elementor-movie-news/wp-content/uploads/sites/8/2022/05/img_27.jpg);
+    background-image: url(assets/img_27.jpg);
     background-size: cover;
     color: rgb(0, 0, 0);
     height: 450px;
