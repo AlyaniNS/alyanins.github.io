@@ -1,0 +1,307 @@
+---
+const { p } = Astro.props;
+const img = p.data.cover;
+const tags: string[] = p.data.tags ?? [];
+const stack: string[] = p.data.stack ?? [];
+const { Content } = await p.render();
+
+// Make DOM‑safe IDs from the slug
+const safeId = String(p.slug).toLowerCase().replace(/[^a-z0-9_-]/gi, '-');
+const cardId = `card-${safeId}`;
+const modalId = `modal-${safeId}`;
+
+// Stack logos mapping
+const stackLogos: Record<string, string> = {
+  'React': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+  'Vue': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg',
+  'Angular': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg',
+  'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+  'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+  'Node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+  'Python': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'PHP': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+  'Laravel': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg',
+  'MySQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+  'PostgreSQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+  'MongoDB': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+  'Docker': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+  'AWS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg',
+  'Figma': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+  'Tailwind': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
+  'Bootstrap': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg',
+  'Git': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+  'GitHub': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+  'Astro': 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
+  'Next.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+  'Nuxt': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg',
+  'Svelte': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/svelte/svelte-original.svg'
+};
+---
+
+<style is:global>
+  dialog:not([open]) { display: none; }
+  dialog::backdrop { 
+    background: rgba(0,0,0,.6); 
+    backdrop-filter: blur(4px); 
+    -webkit-backdrop-filter: blur(4px); 
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<div class="relative group">
+  <!-- PROJECT CARD -->
+  <article
+    id={cardId}
+    role="button"
+    tabindex="0"
+    aria-label={`Open details of ${p.data.title}`}
+    class="relative overflow-hidden rounded-2xl bg-white border border-orange-200 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-300 cursor-pointer h-full"
+  >
+    <!-- Background Image with Fade Effect -->
+    {img && (
+      <div class="relative h-48 overflow-hidden">
+        <img
+          src={img}
+          alt={p.data.title}
+          loading="lazy"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <!-- Fade overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        
+        <!-- Year badge -->
+        {p.data.year && (
+          <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-zinc-700">
+            {p.data.year}
+          </div>
+        )}
+      </div>
+    )}
+
+    <!-- Content -->
+    <div class="p-6">
+      <!-- Category -->
+      {p.data.category && (
+        <span class="inline-block mb-3 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-medium uppercase tracking-wide">
+          {p.data.category}
+        </span>
+      )}
+
+      <!-- Project Name -->
+      <h3 class="text-xl font-bold text-zinc-900 mb-2 line-clamp-2">{p.data.title}</h3>
+
+      <!-- Project Description -->
+      <p class="text-sm text-zinc-600 mb-4 line-clamp-3">{p.data.description}</p>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        {tags.slice(0, 3).map((tag: string) => (
+          <span class="tag text-xs">{tag}</span>
+        ))}
+        {tags.length > 3 && (
+          <span class="text-xs text-zinc-500">+{tags.length - 3} more</span>
+        )}
+      </div>
+
+      <!-- Stack Preview -->
+      {stack.length > 0 && (
+        <div class="flex gap-2 mb-4">
+          {stack.slice(0, 4).map((tech: string) => (
+            stackLogos[tech] ? (
+              <img 
+                src={stackLogos[tech]} 
+                alt={tech}
+                class="w-6 h-6 rounded"
+                title={tech}
+              />
+            ) : (
+              <span class="w-6 h-6 bg-zinc-200 rounded flex items-center justify-center text-xs font-bold text-zinc-600" title={tech}>
+                {tech.charAt(0)}
+              </span>
+            )
+          ))}
+          {stack.length > 4 && (
+            <span class="w-6 h-6 bg-zinc-100 rounded flex items-center justify-center text-xs text-zinc-500">
+              +{stack.length - 4}
+            </span>
+          )}
+        </div>
+      )}
+
+      <!-- Click to view indicator -->
+      <div class="flex items-center justify-between mt-auto pt-2">
+        <span class="text-xs text-zinc-500">Click to view details</span>
+        <svg class="w-4 h-4 text-zinc-400 group-hover:text-brand-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  </article>
+
+  <!-- MODAL -->
+  <dialog id={modalId} class="z-50 max-w-4xl w-[min(95vw,900px)] rounded-2xl p-0 max-h-[90vh] overflow-auto">
+    <!-- Modal Header with Image -->
+    {img && (
+      <div class="relative h-64 overflow-hidden rounded-t-2xl">
+        <img src={img} alt={p.data.title} class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        
+        <!-- Close button -->
+        <button 
+          type="button" 
+          data-close 
+          class="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors" 
+          aria-label="Close"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        {p.data.year && (
+          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 font-semibold text-zinc-800">
+            {p.data.year}
+          </div>
+        )}
+      </div>
+    )}
+
+    <div class="p-8">
+      <!-- Header -->
+      <div class="mb-6">
+        {p.data.category && (
+          <span class="inline-block mb-3 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium uppercase tracking-wide">
+            {p.data.category}
+          </span>
+        )}
+        
+        <h2 class="text-3xl font-bold text-zinc-900 mb-3">{p.data.title}</h2>
+        <p class="text-lg text-zinc-600">{p.data.description}</p>
+      </div>
+
+      <!-- Project Details -->
+      {p.data.details && (
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-3">Project Details</h3>
+          <p class="text-zinc-700 leading-relaxed">{p.data.details}</p>
+        </div>
+      )}
+
+      <!-- Content from markdown -->
+      <div class="mb-6 prose prose-zinc max-w-none">
+        <Content />
+      </div>
+
+      <!-- Tech Stack -->
+      {stack.length > 0 && (
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-4">Tech Stack</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {stack.map((tech: string) => (
+              <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg">
+                {stackLogos[tech] ? (
+                  <img 
+                    src={stackLogos[tech]} 
+                    alt={tech}
+                    class="w-8 h-8"
+                  />
+                ) : (
+                  <div class="w-8 h-8 bg-zinc-200 rounded flex items-center justify-center text-sm font-bold text-zinc-600">
+                    {tech.charAt(0)}
+                  </div>
+                )}
+                <span class="text-sm font-medium text-zinc-700">{tech}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Tags -->
+      {tags.length > 0 && (
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-3">Tags</h3>
+          <div class="flex flex-wrap gap-2">
+            {tags.map((tag: string) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- CTA Button -->
+      {p.data.ctaHref && (
+        <div class="pt-6 border-t border-zinc-200">
+          <a 
+            href={p.data.ctaHref} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            {p.data.ctaLabel ?? 'View Project'}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      )}
+    </div>
+  </dialog>
+
+  <!-- Script for modal functionality -->
+  <script is:inline define:vars={{ cardId, modalId }}>
+    (function() {
+      const card = document.getElementById(cardId);
+      const modal = document.getElementById(modalId);
+      if (!card || !modal) return;
+
+      const hasNative = !!window.HTMLDialogElement && !!HTMLDialogElement.prototype.showModal;
+      const open = () => hasNative ? modal.showModal() : (modal.setAttribute('open', ''), modal.style.display = 'block');
+      const close = () => hasNative ? modal.close() : (modal.removeAttribute('open'), modal.style.display = 'none');
+
+      // Open modal
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { 
+          e.preventDefault(); 
+          open(); 
+        }
+      });
+
+      // Close modal
+      modal.addEventListener('click', (e) => {
+        const rect = modal.getBoundingClientRect();
+        const inside = e.clientX > rect.left && e.clientX < rect.right && e.clientY > rect.top && e.clientY < rect.bottom;
+        if (!inside) close();
+      });
+
+      modal.querySelector('[data-close]')?.addEventListener('click', close);
+      
+      // ESC key support
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.hasAttribute('open')) {
+          close();
+        }
+      });
+
+      // Prevent CTA link from opening modal
+      const ctaLink = modal.querySelector('a[target="_blank"]');
+      if (ctaLink) {
+        ctaLink.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+    })();
+  </script>
+</div>

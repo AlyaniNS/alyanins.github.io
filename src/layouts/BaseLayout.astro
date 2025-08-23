@@ -1,0 +1,21 @@
+---
+const { title = 'Alyani Septalia', description = 'Final-year Informatics | Data & Web Developer' } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-white text-zinc-800">
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <main class="mx-auto max-w-5xl px-4 sm:px-6">
+      <slot />
+    </main>
+    <footer class="mt-16 border-t py-8 text-center text-sm text-zinc-500">
+      © {new Date().getFullYear()} made by Alyani Septalia
+    </footer>
+  </body>
+</html>

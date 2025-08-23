@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntryBySlug } from 'astro:content';
+
+const { slug } = Astro.params;
+const entry = await getEntryBySlug('projects', slug);
+if (!entry) throw new Error('Project not found');
+const { Content } = await entry.render();
+---
+<BaseLayout title={`${entry.data.title} — Project`}>
+  <article class="prose max-w-2xl mx-auto">
+    <h1>{entry.data.title}</h1>
+    <p class="text-zinc-600">{entry.data.description}</p>
+    <Content />
+  </article>
+</BaseLayout>
