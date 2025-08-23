@@ -14,3 +14,4 @@ npm run dev
 - Update socials in `src/components/Contact.astro`
 - Drop images in `public/assets/...`
 ```
+# 2025-portfolio
