@@ -11,6 +11,9 @@ dist/
 .vercel/
 .netlify/
 
+# Astro specific
+.astro/
+
 # Environment variables
 .env
 .env.local
