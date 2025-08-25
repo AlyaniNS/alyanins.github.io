@@ -1,12 +1,68 @@
 ---
 const nav = [
-  { label: 'Work', href: '#work' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Certifications', href: '#certifications' },
   { label: 'Contact', href: '#contact' },
 ];
 ---
-<header class="py-6 flex items-center justify-between">
-  <a href="/" class="font-semibold">Alyani Septalia</a>
-  <nav class="flex gap-6">
-    {nav.map(n => <a class="text-zinc-600 hover:text-zinc-900" href={n.href}>{n.label}</a>)}
-  </nav>
+<header class="sticky top-0 z-50 w-full backdrop-blur-fallback border-b border-navy-200/30 dark:border-navy-700/40 transition-all duration-300">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-4">
+    <div class="flex items-center justify-between">
+      <a href="/" class="text-sm font-semibold text-navy-900 dark:text-navy-100">Alyani Septalia</a>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-6">
+        <nav class="flex gap-6">
+          {nav.map(n => <a class="text-xs text-navy-600 hover:text-navy-900 dark:text-navy-400 dark:hover:text-navy-100 transition-colors" href={n.href}>{n.label}</a>)}
+        </nav>
+        
+        <!-- Dark mode toggle -->
+        <button
+          id="color-toggle"
+          class="px-3 py-2 rounded-full bg-navy-100 text-navy-700 hover:bg-brand-100 hover:text-brand-600 dark:bg-navy-800 dark:text-navy-300 dark:hover:bg-brand-800 dark:hover:text-brand-300 transition-all duration-200 text-xs font-medium"
+        >
+          <span id="color-label">☀️</span>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation Toggle -->
+      <div class="md:hidden flex items-center gap-3">
+        <!-- Dark mode toggle for mobile -->
+        <button
+          id="color-toggle-mobile"
+          class="px-2 py-2 rounded-full bg-navy-100 text-navy-700 hover:bg-brand-100 hover:text-brand-600 dark:bg-navy-800 dark:text-navy-300 dark:hover:bg-brand-800 dark:hover:text-brand-300 transition-all duration-200 text-xs"
+        >
+          <span id="color-label-mobile">☀️</span>
+        </button>
+        
+        <!-- Hamburger Button -->
+        <button
+          id="mobile-menu-button"
+          class="p-2 rounded-lg bg-navy-100 text-navy-700 hover:bg-brand-100 hover:text-brand-600 dark:bg-navy-800 dark:text-navy-300 dark:hover:bg-brand-800 dark:hover:text-brand-300 transition-all duration-200"
+        >
+          <svg id="hamburger-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="close-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div id="mobile-menu" class="md:hidden hidden mt-4 pb-4 border-t border-navy-200/30 dark:border-navy-700/40">
+      <nav class="flex flex-col gap-3 pt-4">
+        {nav.map(n => 
+          <a 
+            class="text-xs text-navy-600 hover:text-navy-900 dark:text-navy-400 dark:hover:text-navy-100 transition-colors py-2 px-3 rounded-lg hover:bg-navy-50 dark:hover:bg-navy-800/50" 
+            href={n.href}
+            onclick="document.getElementById('mobile-menu').classList.add('hidden'); document.getElementById('hamburger-icon').classList.remove('hidden'); document.getElementById('close-icon').classList.add('hidden');"
+          >
+            {n.label}
+          </a>
+        )}
+      </nav>
+    </div>
+  </div>
 </header>

@@ -3,11 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Projects from '../components/Projects.astro';
+import Certifications from '../components/Certifications.astro';
 import Contact from '../components/Contact.astro';
 ---
-<BaseLayout title="Alyani Septalia — Portfolio">
-  <Header />
+<BaseLayout title="Alyani Septalia | Portfolio">
+  <Header slot="header" />
   <Hero />
   <Projects />
+  <Certifications />
   <Contact />
 </BaseLayout>

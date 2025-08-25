@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-size: 16px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  
+  p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  .backdrop-blur-fallback {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  .dark .backdrop-blur-fallback {
+    background-color: rgba(15, 23, 42, 0.85);
+  }
+  
+  @supports not (backdrop-filter: blur(12px)) {
+    .backdrop-blur-fallback {
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+    
+    .dark .backdrop-blur-fallback {
+      background-color: rgba(15, 23, 42, 0.95);
+    }
+  }
+}
+
 :root { color-scheme: light; }
 .prose a { @apply text-brand-600 hover:text-brand-700 underline; }
-.tag { @apply px-3 py-1 rounded-full border border-orange-200 text-orange-700 bg-orange-50 text-sm; }
+.tag { @apply px-3 py-1 rounded-full border border-orange-200 text-orange-700 bg-orange-50 text-xs; }

@@ -1,21 +1,120 @@
 ---
-const { title = 'Alyani Septalia', description = 'Final-year Informatics | Data & Web Developer' } = Astro.props;
+const {
+  title = 'Alyani Septalia',
+  description = 'Final-year Informatics | Data & Web Developer'
+} = Astro.props;
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
     <title>{title}</title>
   </head>
-  <body class="min-h-screen bg-white text-zinc-800">
+  <body class="min-h-screen bg-white text-navy-800 transition-colors duration-300 font-inter" id="body">
     <link rel="stylesheet" href="/src/styles/base.css" />
+    
+    <slot name="header" />
+
     <main class="mx-auto max-w-5xl px-4 sm:px-6">
       <slot />
     </main>
-    <footer class="mt-16 border-t py-8 text-center text-sm text-zinc-500">
+
+  <footer class="mt-16 border-t border-navy-200 dark:border-navy-700 py-8 text-center text-xs text-navy-500 dark:text-navy-400">
       © {new Date().getFullYear()} made by Alyani Septalia
     </footer>
+
+    <script>
+      const body = document.getElementById('body');
+      
+      function setMode(mode: string) {
+        if (!body) return;
+        
+        const btn = document.getElementById('color-toggle');
+        const btnMobile = document.getElementById('color-toggle-mobile');
+        const label = document.getElementById('color-label');
+        const labelMobile = document.getElementById('color-label-mobile');
+        
+        if (mode === 'dark') {
+          body.classList.add('dark','bg-zinc-900','text-zinc-100');
+          body.classList.remove('bg-white','text-zinc-800');
+          if (label) label.textContent = '🌙';
+          if (labelMobile) labelMobile.textContent = '🌙';
+        } else {
+          body.classList.remove('dark','bg-zinc-900','text-zinc-100');
+          body.classList.add('bg-white','text-zinc-800');
+          if (label) label.textContent = '☀️';
+          if (labelMobile) labelMobile.textContent = '☀️';
+        }
+        localStorage.setItem('color-mode', mode);
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('color-toggle');
+        const btnMobile = document.getElementById('color-toggle-mobile');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const closeIcon = document.getElementById('close-icon');
+        
+        // Dark mode toggle functionality
+        function toggleDarkMode() {
+          const isDark = body?.classList.contains('dark');
+          setMode(isDark ? 'light' : 'dark');
+        }
+        
+        if (btn && body) {
+          btn.onclick = toggleDarkMode;
+        }
+        
+        if (btnMobile && body) {
+          btnMobile.onclick = toggleDarkMode;
+        }
+
+        // Mobile menu toggle functionality
+        if (mobileMenuButton && mobileMenu && hamburgerIcon && closeIcon) {
+          mobileMenuButton.onclick = () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            
+            if (isHidden) {
+              mobileMenu.classList.remove('hidden');
+              hamburgerIcon.classList.add('hidden');
+              closeIcon.classList.remove('hidden');
+            } else {
+              mobileMenu.classList.add('hidden');
+              hamburgerIcon.classList.remove('hidden');
+              closeIcon.classList.add('hidden');
+            }
+          };
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            const isClickInsideMenu = mobileMenu.contains(e.target as Node);
+            const isClickOnButton = mobileMenuButton?.contains(e.target as Node);
+            
+            if (!isClickInsideMenu && !isClickOnButton) {
+              mobileMenu.classList.add('hidden');
+              if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+              if (closeIcon) closeIcon.classList.add('hidden');
+            }
+          }
+        });
+
+        // Set initial mode
+        const saved = localStorage.getItem('color-mode');
+        setMode(saved || 'light');
+      });
+    </script>
   </body>
 </html>

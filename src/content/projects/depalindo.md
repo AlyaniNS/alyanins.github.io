@@ -1,12 +1,13 @@
 ---
-title: "Online Retail analytics"
-description: "Interactive charts and admin analytics panel built for monitoring."
-tags: ["Data Dashboard", "U/UX"]
-ctaLabel: "Data Dashboard"
-ctaHref: "https://example.com/dashboard"
-cover: "/assets/projects/pslh-unmul.png"
+title: "Dewan Pemakai Jasa Angkutan Indonesia (Depalindo)"
+description: "Modern web platform for the Indonesian Transportation Technology Association with member management and event coordination."
+category: "Company Profile Website"
+ctaLabel: "Visit Website"
+ctaHref: "https://depalindo.com"
+cover: "/assets/projects/depalindo.png"
 featured: true
 order: 1
+year: 2025
+stack: ["PHP", "Laravel", "MySQL", "Bootstrap", "JavaScript", "Git"]
+details: "A comprehensive web platform for APTMI (Asosiasi Profesi Teknologi Transportasi Indonesia) that facilitates member registration, event management, news publishing, and organizational communications."
 ---
-
-A short paragraph for the detail page. Add a couple of screenshots and notes.

@@ -1,4 +1,4 @@
----
+e---
 const { p } = Astro.props;
 const img = p.data.cover;
 const tags: string[] = p.data.tags ?? [];
@@ -20,7 +20,6 @@ const stackLogos: Record<string, string> = {
   'Node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
   'Python': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
   'PHP': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
-  'Laravel': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg',
   'MySQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
   'PostgreSQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
   'MongoDB': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
@@ -34,7 +33,9 @@ const stackLogos: Record<string, string> = {
   'Astro': 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
   'Next.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
   'Nuxt': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg',
-  'Svelte': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/svelte/svelte-original.svg'
+  'Svelte': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/svelte/svelte-original.svg',
+  'Wordpress': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+  'Laravel': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
 };
 ---
 
@@ -59,14 +60,14 @@ const stackLogos: Record<string, string> = {
   }
 </style>
 
-<div class="relative group">
+<div class="relative group" data-project-category={p.data.category}>
   <!-- PROJECT CARD -->
   <article
     id={cardId}
     role="button"
     tabindex="0"
     aria-label={`Open details of ${p.data.title}`}
-    class="relative overflow-hidden rounded-2xl bg-white border border-orange-200 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-300 cursor-pointer h-full"
+    class="relative overflow-hidden rounded-2xl bg-white border border-navy-200 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-300 cursor-pointer h-full dark:bg-navy-800 dark:border-navy-700 dark:shadow-soft-dark"
   >
     <!-- Background Image with Fade Effect -->
     {img && (
@@ -82,7 +83,7 @@ const stackLogos: Record<string, string> = {
         
         <!-- Year badge -->
         {p.data.year && (
-          <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-zinc-700">
+          <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-navy-700 dark:bg-navy-800/90 dark:text-navy-200">
             {p.data.year}
           </div>
         )}
@@ -99,49 +100,14 @@ const stackLogos: Record<string, string> = {
       )}
 
       <!-- Project Name -->
-      <h3 class="text-xl font-bold text-zinc-900 mb-2 line-clamp-2">{p.data.title}</h3>
+  <h3 class="text-base font-bold text-navy-900 mb-2 line-clamp-2 dark:text-navy-100">{p.data.title}</h3>
 
       <!-- Project Description -->
-      <p class="text-sm text-zinc-600 mb-4 line-clamp-3">{p.data.description}</p>
-
-      <!-- Tags -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        {tags.slice(0, 3).map((tag: string) => (
-          <span class="tag text-xs">{tag}</span>
-        ))}
-        {tags.length > 3 && (
-          <span class="text-xs text-zinc-500">+{tags.length - 3} more</span>
-        )}
-      </div>
-
-      <!-- Stack Preview -->
-      {stack.length > 0 && (
-        <div class="flex gap-2 mb-4">
-          {stack.slice(0, 4).map((tech: string) => (
-            stackLogos[tech] ? (
-              <img 
-                src={stackLogos[tech]} 
-                alt={tech}
-                class="w-6 h-6 rounded"
-                title={tech}
-              />
-            ) : (
-              <span class="w-6 h-6 bg-zinc-200 rounded flex items-center justify-center text-xs font-bold text-zinc-600" title={tech}>
-                {tech.charAt(0)}
-              </span>
-            )
-          ))}
-          {stack.length > 4 && (
-            <span class="w-6 h-6 bg-zinc-100 rounded flex items-center justify-center text-xs text-zinc-500">
-              +{stack.length - 4}
-            </span>
-          )}
-        </div>
-      )}
+  <p class="text-xs text-navy-600 mb-4 line-clamp-3 dark:text-navy-300">{p.data.description}</p>
 
       <!-- Click to view indicator -->
       <div class="flex items-center justify-between mt-auto pt-2">
-        <span class="text-xs text-zinc-500">Click to view details</span>
+        <span class="text-xs text-navy-500 dark:text-navy-400">Click to view details</span>
         <svg class="w-4 h-4 text-zinc-400 group-hover:text-brand-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -170,7 +136,7 @@ const stackLogos: Record<string, string> = {
         </button>
 
         {p.data.year && (
-          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 font-semibold text-zinc-800">
+          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 text-xs font-medium text-zinc-800">
             {p.data.year}
           </div>
         )}
@@ -181,32 +147,32 @@ const stackLogos: Record<string, string> = {
       <!-- Header -->
       <div class="mb-6">
         {p.data.category && (
-          <span class="inline-block mb-3 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium uppercase tracking-wide">
+          <span class="inline-block mb-3 px-4 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-medium uppercase tracking-wide">
             {p.data.category}
           </span>
         )}
         
-        <h2 class="text-3xl font-bold text-zinc-900 mb-3">{p.data.title}</h2>
-        <p class="text-lg text-zinc-600">{p.data.description}</p>
+        <h2 class="text-sm font-bold text-zinc-900 mb-3">{p.data.title}</h2>
+        <p class="text-xs text-zinc-600">{p.data.description}</p>
       </div>
 
       <!-- Project Details -->
       {p.data.details && (
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-zinc-900 mb-3">Project Details</h3>
-          <p class="text-zinc-700 leading-relaxed">{p.data.details}</p>
+          <h3 class="text-xs font-semibold text-zinc-900 mb-3">Project Details</h3>
+          <p class="text-xs text-zinc-700 leading-relaxed">{p.data.details}</p>
         </div>
       )}
 
       <!-- Content from markdown -->
-      <div class="mb-6 prose prose-zinc max-w-none">
+      <div class="mb-6 prose prose-zinc max-w-none text-xs">
         <Content />
       </div>
 
       <!-- Tech Stack -->
       {stack.length > 0 && (
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-zinc-900 mb-4">Tech Stack</h3>
+          <h3 class="text-xs font-semibold text-zinc-900 mb-4">Tech Stack</h3>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {stack.map((tech: string) => (
               <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg">
@@ -214,14 +180,14 @@ const stackLogos: Record<string, string> = {
                   <img 
                     src={stackLogos[tech]} 
                     alt={tech}
-                    class="w-8 h-8"
+                    class="w-6 h-6"
                   />
                 ) : (
-                  <div class="w-8 h-8 bg-zinc-200 rounded flex items-center justify-center text-sm font-bold text-zinc-600">
+                  <div class="w-6 h-6 bg-zinc-200 rounded flex items-center justify-center text-xs font-bold text-zinc-600">
                     {tech.charAt(0)}
                   </div>
                 )}
-                <span class="text-sm font-medium text-zinc-700">{tech}</span>
+                <span class="text-xs font-medium text-zinc-700">{tech}</span>
               </div>
             ))}
           </div>
@@ -231,7 +197,7 @@ const stackLogos: Record<string, string> = {
       <!-- Tags -->
       {tags.length > 0 && (
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-zinc-900 mb-3">Tags</h3>
+          <h3 class="text-xs font-semibold text-zinc-900 mb-3">Tags</h3>
           <div class="flex flex-wrap gap-2">
             {tags.map((tag: string) => (
               <span class="tag">{tag}</span>
@@ -247,10 +213,10 @@ const stackLogos: Record<string, string> = {
             href={p.data.ctaHref} 
             target="_blank" 
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors"
           >
             {p.data.ctaLabel ?? 'View Project'}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>

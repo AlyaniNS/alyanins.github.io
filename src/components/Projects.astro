@@ -7,21 +7,23 @@ import TagFilter from './TagFilter.astro';
 const all = (await getCollection('projects'))
   .sort((a, b) => (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0) || a.data.order - b.data.order);
 
-const uniqueTags = Array.from(new Set(all.flatMap(p => p.data.tags ?? [])));
+const uniqueCategories = Array.from(new Set(all.map(p => (p.data.category ?? '').trim()))).filter(c => c);
 
 const url = new URL(Astro.request.url);
-const active = url.searchParams.get('tag') ?? 'All';
-const filtered = active === 'All' ? all : all.filter(p => p.data.tags?.includes(active));
+const active = url.searchParams.get('category') ?? 'All';
+const filtered = active === 'All'
+  ? all
+  : all.filter(p => (p.data.category ?? '').trim() === active);
 ---
 <section id="work" class="mt-14">
-  <h2 class="text-2xl font-bold">Past Work</h2>
+  <h2 class="text-sm font-bold text-center">Projects</h2>
 
-  <div class="mt-4">
-    <TagFilter tags={uniqueTags} active={active} />
-  </div>
+    <div class="mt-4 flex justify-center">
+      <TagFilter categories={uniqueCategories} active={active} />
+    </div>
 
   {filtered.length === 0 ? (
-    <p class="mt-8 text-sm text-zinc-500">No projects match "{active}".</p>
+    <p class="mt-8 text-xs text-zinc-500">No projects match "{active}".</p>
   ) : (
     <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {filtered.map((p) => (
