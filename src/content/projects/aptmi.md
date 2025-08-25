@@ -1,6 +1,6 @@
 ---
 title: "Asosiasi Pengusaha Tally Mandiri Indonesia (APTMI)"
-description: "Modern web platform for the Indonesian Transportation Technology Association with member management and event coordination."
+description: "APTMI is a professional association that unites Indonesia’s independent cargo tally companies to promote transparency, certification standards, and fair logistics practices."
 category: "Company Profile Website"
 tags: []
 ctaLabel: "Visit Website"
@@ -9,6 +9,6 @@ cover: "/assets/projects/aptmi.png"
 featured: true
 order: 2
 year: 2025
-stack: ["PHP", "Laravel", "MySQL", "Bootstrap", "JavaScript", "Git"]
-details: "A comprehensive web platform for APTMI (Asosiasi Profesi Teknologi Transportasi Indonesia) that facilitates member registration, event management, news publishing, and organizational communications."
+stack: ["Laravel", "Botble CMS", "Bootstrap", "MySQL", "PHP", "Git"]
+details: "Key features: Company profile, news & article publishing, media management, membership info."
 ---
