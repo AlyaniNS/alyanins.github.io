@@ -25,6 +25,10 @@ const stackIcons: Record<string,string> = {
   'Figma':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
   'Git':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
 };
+import '../styles/home.css';
+import FolderData from '../components/icons/FolderData.astro';
+import FolderWeb from '../components/icons/FolderWeb.astro';
+import HuaweiLogo from '../components/Huawei_logo.svg';
 ---
 
 <!DOCTYPE html>
@@ -39,445 +43,7 @@ const stackIcons: Record<string,string> = {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <title>Alyani Septalia | Portfolio</title>
 
-  <style>
-    /* ── Reset ───────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ── Canvas ──────────────────────────────────────────── */
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #f2ede4;
-      background-image: radial-gradient(#d6cfc4 1px, transparent 1px);
-      background-size: 28px 28px;
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 64px 20px 80px;
-    }
-
-    /* ── Corkboard grid ──────────────────────────────────── */
-    .desktop {
-      display: grid;
-      grid-template-columns: 220px 268px 220px;
-      grid-template-areas:
-        "contact  .       data"
-        "contact  center  data"
-        "web      center  stack"
-        ".        certs   .";
-      gap: 28px 36px;
-      place-items: center;
-      width: 100%;
-      max-width: 800px;
-    }
-    .slot-contact { grid-area: contact; align-self: center; }
-    .slot-data    { grid-area: data;    align-self: center; }
-    .slot-center  { grid-area: center;  align-self: center; }
-    .slot-stack   { grid-area: stack;   align-self: center; }
-    .slot-web     { grid-area: web;     align-self: center; }
-    .slot-certs   { grid-area: certs;   align-self: center; }
-
-    /* ── Sticky note (clean, NO tail, tape on top) ───────── */
-    .note {
-      position: relative;
-      border-radius: 3px;
-      padding: 16px 18px 20px;
-      width: 196px;
-      box-shadow: 2px 5px 20px rgba(0,0,0,.14), 0 1px 3px rgba(0,0,0,.07);
-      opacity: 0;
-      will-change: transform, opacity;
-    }
-    /* Tape strip */
-    .note::before {
-      content: '';
-      position: absolute;
-      top: -9px; left: 50%;
-      transform: translateX(-50%);
-      width: 48px; height: 17px;
-      background: rgba(255,255,255,.55);
-      border-radius: 2px;
-      backdrop-filter: blur(2px);
-    }
-    .note-yellow { background: #fef08a; }
-    .note-pink   { background: #fecdd3; }
-    .note-green  { background: #bbf7d0; }
-    .note-blue   { background: #bae6fd; }
-    .note-purple { background: #e9d5ff; }
-    .note-peach  { background: #fed7aa; }
-
-    .note-label { font-size: .58rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(0,0,0,.38); margin-bottom: 7px; }
-    .note h3    { font-size: .82rem; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
-    .note p, .note li { font-size: .72rem; color: #334155; line-height: 1.65; }
-    .note ul { list-style: none; padding: 0; }
-
-    /* ── Collapsible note toggle (mobile only) ────── */
-    .note-toggle {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      width: 100%; background: none; border: none; cursor: default;
-      padding: 0; text-align: left; -webkit-tap-highlight-color: transparent;
-    }
-    .note-toggle .note-label { margin-bottom: 2px; }
-    .note-toggle h3 { margin-bottom: 0; }
-    .note-chevron {
-      width: 15px; height: 15px; flex-shrink: 0; margin-left: 6px; margin-top: 2px;
-      transition: transform .25s; color: rgba(0,0,0,.35);
-      display: none;
-    }
-    .note-body { margin-top: 10px; }
-
-    /* Contact grid: icon on top, handle below */
-    .cg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 4px; }
-    .cg-item {
-      display: flex; flex-direction: column; align-items: center; gap: 5px;
-      text-decoration: none; color: #1e293b;
-      padding: 10px 6px 8px; border-radius: 10px;
-      background: rgba(0,0,0,.09); transition: background .15s;
-      text-align: center;
-    }
-    .cg-item:hover { background: rgba(0,0,0,.17); }
-    .cg-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-    .cg-icon svg, .cg-icon img { width: 20px; height: 20px; }
-    .cg-service { font-family: 'Inter', sans-serif; font-size: .55rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: rgba(0,0,0,.45); }
-    .cg-handle  { font-family: 'Inter', sans-serif; font-size: .7rem; font-weight: 600; color: #0f172a; line-height: 1.2; word-break: break-all; }
-
-    /* Contact icons-only in desktop note — labels still show in overlay */
-    .note .cg--contact { grid-template-columns: repeat(3, 1fr); gap: 5px; }
-    .note .cg--contact .cg-item { padding: 8px 4px 7px; border-radius: 8px; gap: 0; }
-    .note .cg--contact .cg-handle,
-    .note .cg--contact .cg-service { display: none; }
-    .note .cg--contact .cg-icon { width: 28px; height: 28px; }
-    .note .cg--contact .cg-icon svg { width: 22px; height: 22px; }
-
-    /* Stack icon grid: 4-col compact when inside a note on desktop */
-    .note .cg--stack {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-    }
-    .note .cg--stack .cg-item { padding: 8px 4px 7px; border-radius: 8px; gap: 0; }
-    /* Inside the note: icons only — no label text. Labels still appear in the expand overlay. */
-    .note .cg--stack .cg-handle { display: none; }
-    .note .cg--stack .cg-icon img { width: 22px; height: 22px; }
-
-    /* Stack chips */
-    .note-stack { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-    .stack-chip { font-size: .58rem; font-weight: 600; background: rgba(0,0,0,.1); border-radius: 999px; padding: 2px 8px; color: #1e293b; }
-
-    /* Cert rows */
-    .cert-list { display: flex; flex-direction: column; gap: 9px; margin-top: 2px; }
-    .cert-row  { display: flex; align-items: center; gap: 8px; }
-    .cert-icon { width: 22px; height: 22px; flex-shrink: 0; }
-    .cert-name   { font-size: .72rem; font-weight: 700; color: #1e293b; line-height: 1.2; }
-    .cert-issuer { font-size: .6rem; color: #64748b; font-weight: 400; }
-
-    /* ── Center title note ───────────────────────────────── */
-    .note-center {
-      background: #fef08a;
-      border-radius: 3px;
-      padding: 34px 28px 40px;
-      text-align: center;
-      box-shadow: 3px 6px 30px rgba(0,0,0,.17), 0 1px 3px rgba(0,0,0,.08);
-      position: relative;
-      opacity: 0;
-      will-change: transform, opacity;
-      width: 240px;
-    }
-    .note-center::before {
-      content: '';
-      position: absolute;
-      top: -9px; left: 50%;
-      transform: translateX(-50%);
-      width: 60px; height: 18px;
-      background: rgba(255,255,255,.6);
-      border-radius: 2px;
-    }
-    .center-name {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 800; color: #0f172a; line-height: 1.1; display: block;
-    }
-    .center-sub {
-      display: block; margin-top: 8px;
-      font-size: .72rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .12em; color: #64748b;
-    }
-    .center-tagline { display: block; margin-top: 10px; font-size: .65rem; color: #64748b; line-height: 1.5; }
-
-    /* ──  button ───────────────────────────────────── */
-    .folder-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      background: none; border: none; cursor: pointer;
-      padding: 12px 14px 16px; border-radius: 14px;
-      transition: background .18s; opacity: 0; will-change: transform, opacity;
-    }
-    .folder-btn:hover  { background: rgba(0,0,0,.05); }
-    .folder-btn:active { transform: scale(.96); }
-    .folder-btn:focus-visible { outline: 2px solid #3b82f6; outline-offset: 4px; border-radius: 14px; }
-    .folder-svg {
-      width: 90px; height: 74px;
-      filter: drop-shadow(2px 5px 9px rgba(0,0,0,.2));
-      transition: transform .25s cubic-bezier(.34,1.56,.64,1);
-    }
-    .folder-btn:hover .folder-svg { transform: translateY(-6px) scale(1.06); }
-    .folder-name-label { font-size: .72rem; font-weight: 700; color: #1e293b; text-align: center; line-height: 1.35; }
-    .folder-count { font-size: .6rem; color: #64748b; }
-
-    /* ── Finder window (macOS style, always centered) ────── */
-    dialog.finder-window {
-      position: fixed;
-      inset: 0;
-      margin: auto;
-      width: min(92vw, 660px);
-      max-height: min(85svh, 580px);
-      border-radius: 14px;
-      border: none;
-      overflow: hidden;
-      padding: 0;
-      box-shadow: 0 28px 80px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.1);
-    }
-    dialog.finder-window::backdrop { background: rgba(0,0,0,.42); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-    dialog.finder-window:not([open]) { display: none; }
-
-    .finder-titlebar {
-      background: linear-gradient(180deg, #ebebeb 0%, #d5d5d5 100%);
-      padding: 11px 16px 9px;
-      display: flex; align-items: center; gap: 10px;
-      border-bottom: 1px solid #bbb;
-      user-select: none; position: sticky; top: 0; z-index: 2;
-    }
-    .traffic-lights { display: flex; gap: 7px; align-items: center; }
-    .tl { width: 13px; height: 13px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; padding: 0; }
-    .tl-red    { background: #ff5f57; }
-    .tl-yellow { background: #febc2e; }
-    .tl-green  { background: #28c840; }
-    .tl-red:hover { background: #e64940; }
-    .finder-folder-icon { width: 20px; height: 16px; }
-    .finder-title { flex: 1; text-align: center; font-size: .76rem; font-weight: 600; color: #3a3a3a; }
-
-    .finder-content {
-      background: white;
-      padding: 20px;
-      overflow-y: auto;
-      max-height: calc(min(85svh, 580px) - 44px);
-    }
-    .finder-empty {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 52px 20px; color: #aaa; gap: 16px;
-    }
-    .finder-empty svg { opacity: .22; }
-    .finder-empty p { font-size: .78rem; text-align: center; color: #999; line-height: 1.6; }
-    .finder-empty strong { color: #666; }
-
-    .finder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 12px; }
-    .file-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      background: none; border: none; cursor: pointer;
-      padding: 10px 8px 12px; border-radius: 10px;
-      transition: background .15s; text-align: center; width: 100%;
-    }
-    .file-btn:hover { background: #eff6ff; }
-    .file-btn:focus-visible { outline: 2px solid #3b82f6; border-radius: 10px; }
-    .file-thumb {
-      width: 100%; aspect-ratio: 4/3; object-fit: cover;
-      border-radius: 8px; border: 1px solid #e2e8f0;
-      box-shadow: 0 2px 8px rgba(0,0,0,.1);
-    }
-    .file-thumb-ph {
-      width: 100%; aspect-ratio: 4/3; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .file-title {
-      font-size: .72rem; font-weight: 600; color: #0f172a; line-height: 1.35;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .file-year  { font-size: .62rem; color: #94a3b8; }
-
-    /* ════════════════════════════════════════════════════
-       ANIMATIONS — circular orbit entrance
-       ─ Peripheral items fly in clockwise: NW→NE→SE→SW→S
-       ─ Each starts displaced outward from its quadrant
-       ─ Center pops in last with spring bounce
-    ════════════════════════════════════════════════════ */
-    @keyframes orbitIn {
-      0%   { opacity: 0; transform: translate(var(--ox,0), var(--oy,0)) scale(.58) rotate(var(--or, 0deg)); }
-      55%  { opacity: 1; }
-      70%  { transform: translate(0,0) scale(1.06) rotate(var(--or, 0deg)); }
-      100% { opacity: 1; transform: translate(0,0) scale(1) rotate(var(--or, 0deg)); }
-    }
-    @keyframes centerPop {
-      0%   { opacity: 0; transform: scale(.45) rotate(-4deg); }
-      50%  { opacity: 1; transform: scale(1.1) rotate(-2deg); }
-      72%  { transform: scale(.96) rotate(-2.5deg); }
-      100% { opacity: 1; transform: scale(1) rotate(-2deg); }
-    }
-
-    .note      { animation: orbitIn .6s cubic-bezier(.34,1.56,.64,1) both; }
-    .folder-btn{ animation: orbitIn .6s cubic-bezier(.34,1.56,.64,1) both; }
-    .note-center{ animation: centerPop .75s cubic-bezier(.34,1.56,.64,1) .85s both; }
-
-    /* Per-slot: origin offset (px) + final tilt + delay — clockwise orbit */
-    .slot-contact .note     { --ox:-130px; --oy:-90px; --or:-4deg;  animation-delay: 0s;    }
-    .slot-data    .folder-btn{ --ox: 120px; --oy:-90px; --or: 0deg;  animation-delay: .14s;  }
-    .slot-web     .folder-btn{ --ox:-130px; --oy: 90px; --or: 0deg;  animation-delay: .28s;  }
-    .slot-stack   .note     { --ox: 130px; --oy: 90px; --or: 3deg;  animation-delay: .42s;  }
-    .slot-certs   .note     { --ox:   0px; --oy:110px; --or:-2deg;  animation-delay: .56s;  }
-
-    /* ── Tablet collapsible notes (521px–740px) ────────── */
-    @media (max-width: 740px) {
-      .note-toggle { cursor: pointer; }
-      .note-chevron { display: block; }
-      .note-body { display: none; }
-      .note[data-open] .note-body { display: block; animation: fadeSlide .22s ease both; }
-      .note[data-open] .note-chevron { transform: rotate(180deg); }
-    }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Tablet grid (521px–740px) ───────────────────────── */
-    @media (min-width: 521px) and (max-width: 740px) {
-      body { padding: 44px 14px 60px; justify-content: flex-start; }
-      .desktop {
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-          "contact  data"
-          "center   center"
-          "web      stack"
-          "certs    certs";
-        gap: 18px 14px;
-        max-width: 480px;
-      }
-      .slot-contact, .slot-data, .slot-stack, .slot-web { justify-self: center; }
-      .slot-center, .slot-certs { justify-self: center; }
-      .note         { width: 164px; padding: 13px 14px 16px; }
-      .note-center  { width: 210px; padding: 26px 22px 30px; }
-      .folder-svg   { width: 72px; height: 58px; }
-    }
-
-    /* ── Mobile corkboard scatter (≤520px) ───────────────── */
-    @media (max-width: 520px) {
-      body { padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100svh; }
-      .desktop {
-        display: block;
-        position: relative;
-        width: 100vw;
-        height: 100svh;
-        max-width: 100%;
-        overflow: hidden;
-      }
-
-      /* center title: absolutely centered */
-      .slot-center {
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-      }
-      .note-center { width: 175px; padding: 24px 18px 28px; }
-
-      /* scatter positions — calc() from centre, overlapping edges of center note */
-      .slot-contact { position: absolute; top: calc(50% - 145px); left: calc(50% - 155px); z-index: 4; transform: none; }
-      .slot-data    { position: absolute; top: calc(50% - 130px); left: calc(50% + 70px);  z-index: 4; }
-      .slot-web     { position: absolute; top: calc(50% + 52px);  left: calc(50% - 155px); z-index: 4; transform: none; }
-      .slot-stack   { position: absolute; top: calc(50% + 38px);  left: calc(50% + 70px);  z-index: 4; }
-      .slot-certs   { position: absolute; top: calc(50% + 73px);  left: 50%; transform: translateX(-50%); z-index: 4; }
-
-      /* mini note squares — tap to expand */
-      .note {
-        width: 86px; height: 86px;
-        padding: 10px 11px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform .15s;
-        text-align: center;
-      }
-      .note:active { transform: scale(.93) rotate(var(--or, 0deg)); }
-      .note-toggle { cursor: pointer; width: 100%; }
-      .note .note-body    { display: none !important; }
-      .note .note-chevron { display: none !important; }
-      .note .note-label   { display: none !important; }
-      .note h3 { font-size: .68rem; line-height: 1.3; margin: 0; overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
-
-      /* per-note tilts */
-      .slot-contact .note { --or: -7deg; }
-      .slot-stack   .note { --or:  6deg; }
-      .slot-certs   .note { --or: -3deg; }
-
-      /* mini folders */
-      .folder-btn        { padding: 8px 10px 12px; }
-      .folder-svg        { width: 56px; height: 46px; }
-      .folder-name-label { font-size: .62rem; }
-      .folder-count      { font-size: .54rem; }
-    }
-
-    /* ── Note expand overlay ─────────────────────────────── */
-    .note-overlay-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.38);
-      z-index: 399;
-      opacity: 0; pointer-events: none;
-      transition: opacity .25s;
-    }
-    .note-overlay-backdrop.open { opacity: 1; pointer-events: auto; }
-
-    .note-overlay {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(.12);
-      width: min(88vw, 340px);
-      max-height: 78svh;
-      overflow-y: auto;
-      z-index: 400;
-      border-radius: 3px;
-      padding: 22px 20px 26px;
-      box-shadow: 4px 10px 44px rgba(0,0,0,.28);
-      opacity: 0; pointer-events: none;
-      transition:
-        transform .35s cubic-bezier(.34,1.56,.64,1),
-        opacity   .18s ease;
-    }
-    /* tape strip */
-    .note-overlay::before {
-      content: '';
-      position: absolute;
-      top: -10px; left: 50%;
-      transform: translateX(-50%);
-      width: 56px; height: 18px;
-      background: rgba(255,255,255,.55);
-      border-radius: 2px;
-      backdrop-filter: blur(2px);
-    }
-    .note-overlay.open {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1; pointer-events: auto;
-    }
-    .note-overlay-head {
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-      margin-bottom: 14px;
-    }
-    .note-overlay .ov-label {
-      font-size: .6rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .08em; color: rgba(0,0,0,.38); margin-bottom: 3px;
-      font-family: 'Inter', sans-serif;
-    }
-    .note-overlay .ov-title {
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem; font-weight: 700; color: #0f172a; line-height: 1.2;
-    }
-    .note-overlay-close {
-      width: 26px; height: 26px; border-radius: 50%; border: none; flex-shrink: 0;
-      background: rgba(0,0,0,.12); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .note-overlay-close svg { width: 12px; height: 12px; color: rgba(0,0,0,.5); }
-    .note-overlay-close:hover { background: rgba(0,0,0,.2); }
-    /* reset inner spacing inside overlay */
-    .note-overlay .note-stack { margin-top: 0; }
-    .note-overlay .cert-list  { margin-top: 0; }
-    .note-overlay .cg         { margin-top: 0; }
-  </style>
+  
 </head>
 <body>
 
@@ -520,14 +86,7 @@ const stackIcons: Record<string,string> = {
   <!-- ── DATA FOLDER (NE) ─────────────────────────── -->
   <div class="slot-data">
     <button class="folder-btn" data-open-folder="folder-data" aria-label="Open Data Analysis Portfolio">
-      <svg class="folder-svg" viewBox="0 0 90 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 18C3 15.24 5.24 13 8 13H28L36 21H82C84.76 21 87 23.24 87 26V66C87 68.76 84.76 71 82 71H8C5.24 71 3 68.76 3 66V18Z" fill="#4ADE80"/>
-        <path d="M3 18C3 15.24 5.24 13 8 13H28L36 21H3V18Z" fill="#22C55E"/>
-        <!-- bar chart -->
-        <rect x="28" y="36" width="8" height="20" rx="2" fill="rgba(0,80,0,.3)"/>
-        <rect x="40" y="29" width="8" height="27" rx="2" fill="rgba(0,80,0,.3)"/>
-        <rect x="52" y="33" width="8" height="23" rx="2" fill="rgba(0,80,0,.3)"/>
-      </svg>
+      <FolderData class="folder-svg" />
       <span class="folder-name-label">Data Analysis<br/>Portfolio</span>
       <span class="folder-count">{dataProjects.length} item{dataProjects.length !== 1 ? 's' : ''}</span>
     </button>
@@ -574,16 +133,7 @@ const stackIcons: Record<string,string> = {
   <!-- ── WEB FOLDER (SE) ─────────────────────────── -->
   <div class="slot-web">
     <button class="folder-btn" data-open-folder="folder-web" aria-label="Open Website Portfolio">
-      <svg class="folder-svg" viewBox="0 0 90 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 18C3 15.24 5.24 13 8 13H28L36 21H82C84.76 21 87 23.24 87 26V66C87 68.76 84.76 71 82 71H8C5.24 71 3 68.76 3 66V18Z" fill="#60A5FA"/>
-        <path d="M3 18C3 15.24 5.24 13 8 13H28L36 21H3V18Z" fill="#3B82F6"/>
-        <!-- globe -->
-        <circle cx="45" cy="46" r="16" stroke="rgba(0,40,170,.28)" stroke-width="2" fill="none"/>
-        <ellipse cx="45" cy="46" rx="7" ry="16" stroke="rgba(0,40,170,.28)" stroke-width="1.5" fill="none"/>
-        <line x1="29" y1="46" x2="61" y2="46" stroke="rgba(0,40,170,.28)" stroke-width="1.5"/>
-        <line x1="30.5" y1="39" x2="59.5" y2="39" stroke="rgba(0,40,170,.22)" stroke-width="1.2"/>
-        <line x1="30.5" y1="53" x2="59.5" y2="53" stroke="rgba(0,40,170,.22)" stroke-width="1.2"/>
-      </svg>
+      <FolderWeb class="folder-svg" />
       <span class="folder-name-label">Website<br/>Portfolio</span>
       <span class="folder-count">{webProjects.length} item{webProjects.length !== 1 ? 's' : ''}</span>
     </button>
@@ -605,11 +155,10 @@ const stackIcons: Record<string,string> = {
       <div class="cert-list">
         <!-- Huawei HCIA Datacom -->
         <div class="cert-row">
-          <svg class="cert-icon" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="11" fill="#CF0A2C"/>
-            <path d="M6 12c0-3.31 2.69-6 6-6s6 2.69 6 6-2.69 6-6 6" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none"/>
-            <circle cx="12" cy="12" r="2" fill="white"/>
-          </svg>
+<img 
+  src={HuaweiLogo.src}
+  class="cert-icon"
+  alt="Huawei">
           <div>
             <div class="cert-name">HCIA Datacom</div>
             <div class="cert-issuer">Huawei</div>
@@ -662,23 +211,36 @@ const stackIcons: Record<string,string> = {
       </div>
     ) : (
       <div class="finder-grid">
-        {dataProjects.map(p => (
-          <button class="file-btn" data-open-modal={p.slug} aria-label={`Open ${p.data.title}`}>
-            {p.data.cover
-              ? <img src={p.data.cover} alt={p.data.title} loading="lazy" class="file-thumb" />
-              : <div class="file-thumb-ph" style="background:#dcfce7">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="12" width="3" height="8" rx="1" fill="#4ADE80"/>
-                    <rect x="9" y="7" width="3" height="13" rx="1" fill="#22C55E"/>
-                    <rect x="15" y="4" width="3" height="16" rx="1" fill="#16A34A"/>
-                    <rect x="21" y="9" width="3" height="11" rx="1" fill="#4ADE80"/>
-                  </svg>
-                </div>
+        {dataProjects.map(p => {
+          let coverUrl = p.data.cover;
+          if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
+            const urlObj = new URL(p.data.ctaHref);
+            const pathParts = urlObj.pathname.split('/').filter(Boolean);
+            if (pathParts.length >= 2) {
+              const owner = pathParts[0];
+              const repo = pathParts[1];
+              coverUrl = `https://opengraph.githubassets.com/1/${owner}/${repo}`;
             }
-            <span class="file-title">{p.data.title}</span>
-            {p.data.year && <span class="file-year">{p.data.year}</span>}
-          </button>
-        ))}
+          }
+
+          return (
+            <button class="file-btn" data-open-modal={p.slug} aria-label={`Open ${p.data.title}`}>
+              {coverUrl
+                ? <img src={coverUrl} alt={p.data.title} loading="lazy" class="file-thumb" />
+                : <div class="file-thumb-ph" style="background:#dcfce7">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="12" width="3" height="8" rx="1" fill="#4ADE80"/>
+                      <rect x="9" y="7" width="3" height="13" rx="1" fill="#22C55E"/>
+                      <rect x="15" y="4" width="3" height="16" rx="1" fill="#16A34A"/>
+                      <rect x="21" y="9" width="3" height="11" rx="1" fill="#4ADE80"/>
+                    </svg>
+                  </div>
+              }
+              <span class="file-title">{p.data.title}</span>
+              {p.data.year && <span class="file-year">{p.data.year}</span>}
+            </button>
+          );
+        })}
       </div>
     )}
   </div>
@@ -699,22 +261,35 @@ const stackIcons: Record<string,string> = {
       <div class="finder-empty"><p>No projects yet.</p></div>
     ) : (
       <div class="finder-grid">
-        {webProjects.map(p => (
-          <button class="file-btn" data-open-modal={p.slug} aria-label={`Open ${p.data.title}`}>
-            {p.data.cover
-              ? <img src={p.data.cover} alt={p.data.title} loading="lazy" class="file-thumb" />
-              : <div class="file-thumb-ph" style="background:#dbeafe">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="9" stroke="#60A5FA" stroke-width="1.5" fill="none"/>
-                    <ellipse cx="12" cy="12" rx="4" ry="9" stroke="#60A5FA" stroke-width="1.5" fill="none"/>
-                    <line x1="3" y1="12" x2="21" y2="12" stroke="#60A5FA" stroke-width="1.5"/>
-                  </svg>
-                </div>
+        {webProjects.map(p => {
+          let coverUrl = p.data.cover;
+          if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
+            const urlObj = new URL(p.data.ctaHref);
+            const pathParts = urlObj.pathname.split('/').filter(Boolean);
+            if (pathParts.length >= 2) {
+              const owner = pathParts[0];
+              const repo = pathParts[1];
+              coverUrl = `https://opengraph.githubassets.com/1/${owner}/${repo}`;
             }
-            <span class="file-title">{p.data.title}</span>
-            {p.data.year && <span class="file-year">{p.data.year}</span>}
-          </button>
-        ))}
+          }
+
+          return (
+            <button class="file-btn" data-open-modal={p.slug} aria-label={`Open ${p.data.title}`}>
+              {coverUrl
+                ? <img src={coverUrl} alt={p.data.title} loading="lazy" class="file-thumb" />
+                : <div class="file-thumb-ph" style="background:#dbeafe">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="9" stroke="#60A5FA" stroke-width="1.5" fill="none"/>
+                      <ellipse cx="12" cy="12" rx="4" ry="9" stroke="#60A5FA" stroke-width="1.5" fill="none"/>
+                      <line x1="3" y1="12" x2="21" y2="12" stroke="#60A5FA" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+              }
+              <span class="file-title">{p.data.title}</span>
+              {p.data.year && <span class="file-year">{p.data.year}</span>}
+            </button>
+          );
+        })}
       </div>
     )}
   </div>
@@ -756,8 +331,8 @@ const stackIcons: Record<string,string> = {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <span id="ql-win-title" class="ql-win-title"></span>
-    <div class="ql-topbar-spacer"></div>
+    <span id="ql-win-title" class="ql-win-title" style="display:none;"></span>
+    <div class="ql-topbar-spacer" style="display:none;"></div>
   </div>
   <div id="ql-body" class="ql-body"></div>
   <div id="ql-strip" class="ql-strip"></div>
@@ -864,8 +439,21 @@ const stackIcons: Record<string,string> = {
       btn.className = 'ql-strip-item' + (i === qlIdx ? ' ql-active' : '');
       btn.setAttribute('aria-label', s.title);
       const isData = s.folder === 'data';
-      const thumb = s.cover
-        ? `<img class="ql-strip-thumb" src="${s.cover}" alt="" />`
+      
+      let coverUrl = s.cover;
+      const ctaHref = s.el.dataset.cta || '';
+      if (!coverUrl && ctaHref.startsWith('https://github.com/')) {
+        try {
+          const urlObj = new URL(ctaHref);
+          const pathParts = urlObj.pathname.split('/').filter(Boolean);
+          if (pathParts.length >= 2) {
+            coverUrl = `https://opengraph.githubassets.com/1/${pathParts[0]}/${pathParts[1]}`;
+          }
+        } catch (e) {}
+      }
+
+      const thumb = coverUrl
+        ? `<img class="ql-strip-thumb" src="${coverUrl}" alt="" />`
         : `<div class="ql-strip-ph" style="background:${isData ? '#dcfce7' : '#dbeafe'}">
              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                ${isData

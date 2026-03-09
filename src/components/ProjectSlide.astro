@@ -23,6 +23,17 @@ const stackLogos: Record<string, string> = {
   'Botble CMS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
   'Filament':   'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/filamentphp/filamentphp-original.svg',
 };
+
+let coverUrl = p.data.cover;
+if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
+  try {
+    const urlObj = new URL(p.data.ctaHref);
+    const pathParts = urlObj.pathname.split('/').filter(Boolean);
+    if (pathParts.length >= 2) {
+      coverUrl = `https://opengraph.githubassets.com/1/${pathParts[0]}/${pathParts[1]}`;
+    }
+  } catch (e) {}
+}
 ---
 
 <style is:global>
@@ -32,128 +43,165 @@ const stackLogos: Record<string, string> = {
   /* ── Quick Look viewer shell ──────────────────────────── */
   dialog.ql-viewer {
     position: fixed; inset: 0; margin: auto;
-    width: min(94vw, 740px);
-    height: min(90svh, 720px);
-    border-radius: 12px; border: none; padding: 0; overflow: hidden;
+    width: min(96vw, 860px);
+    height: min(92svh, 800px);
+    border-radius: 16px; border: none; padding: 0; overflow: hidden;
     display: flex; flex-direction: column;
-    box-shadow: 0 32px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.2);
-    background: #fff;
+    box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.15);
+    background: #fafafa;
+    animation: qlEnter .3s cubic-bezier(.175, .885, .32, 1);
   }
+  @keyframes qlEnter { from { opacity: 0; transform: scale(.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
   dialog.ql-viewer:not([open]) { display: none; }
-  dialog.ql-viewer::backdrop   { background: rgba(0,0,0,.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  dialog.ql-viewer::backdrop   { background: rgba(0,0,0,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: qlBackdrop .3s ease; }
+  @keyframes qlBackdrop { from { opacity: 0; } to { opacity: 1; } }
 
-  /* Topbar */
+  /* Topbar (macOS Quick Look Style) */
   .ql-topbar {
-    display: flex; align-items: center; gap: 0;
-    background: #252528;
-    padding: 9px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    padding: 12px 16px;
     flex-shrink: 0;
-    border-bottom: 1px solid rgba(255,255,255,.07);
-    user-select: none;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    z-index: 10;
   }
-  .ql-lights { display: flex; gap: 7px; align-items: center; flex-shrink: 0; margin-right: 14px; }
-  .ql-tl { width: 13px; height: 13px; border-radius: 50%; border: none; cursor: default; padding: 0; flex-shrink: 0; }
+  .ql-topbar-left { display: flex; align-items: center; flex: 1; }
+  .ql-lights { display: flex; gap: 8px; align-items: center; }
+  .ql-tl { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: default; padding: 0; flex-shrink: 0; }
   .ql-tl-red    { background: #ff5f57; cursor: pointer; }
   .ql-tl-yellow { background: #febc2e; }
   .ql-tl-green  { background: #28c840; }
   .ql-tl-red:hover { background: #e64940; }
 
-  .ql-nav-area { display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-right: 10px; }
+  .ql-nav-area { display: flex; align-items: center; gap: 2px; justify-content: flex-end; flex: none; }
+  .ql-nav-group { display: flex; background: rgba(0,0,0,.05); border-radius: 6px; padding: 2px; }
   .ql-nav-btn {
-    width: 24px; height: 24px; border-radius: 5px; border: none;
-    background: rgba(255,255,255,.1); color: #ccc; cursor: pointer;
+    width: 28px; height: 26px; border-radius: 4px; border: none;
+    background: transparent; color: #333; cursor: pointer;
     display: flex; align-items: center; justify-content: center; padding: 0;
     transition: background .15s;
   }
-  .ql-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,.22); }
-  .ql-nav-btn:disabled { opacity: .28; cursor: default; }
+  .ql-nav-btn:hover:not(:disabled) { background: rgba(0,0,0,.08); }
+  .ql-nav-btn:disabled { opacity: .3; cursor: default; }
   .ql-nav-btn svg { width: 13px; height: 13px; }
-  .ql-counter { font-size: .65rem; color: rgba(255,255,255,.35); min-width: 32px; text-align: center; font-variant-numeric: tabular-nums; }
+  .ql-counter { font-size: .75rem; color: #555; min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; padding: 0 4px; }
+  
   .ql-win-title {
-    flex: 1; text-align: center;
-    font-size: .74rem; font-weight: 600; color: rgba(255,255,255,.65);
+    flex: 1; text-align: right;
+    font-size: .8rem; font-weight: 600; color: #333;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px;
   }
-  .ql-topbar-spacer { width: 80px; flex-shrink: 0; }
 
-  /* Body */
-  .ql-body { flex: 1; overflow-y: auto; background: #fff; min-height: 0; }
+  /* Body (macOS style - Split View) */
+  .ql-body { flex: 1; display: flex; flex-direction: row; background: #fff; min-height: 0; overflow: hidden; }
+  
+  .ql-preview-pane {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background-color: #f8fafc;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+    padding: 32px; overflow: hidden; position: relative;
+  }
   .ql-cover {
-    width: 100%; aspect-ratio: 16/5; object-fit: cover;
-    object-position: center top; display: block;
-    border-bottom: 1px solid #e5e7eb;
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    border-radius: 8px; box-shadow: 0 10px 30px -5px rgba(0,0,0,.15), 0 0 0 1px rgba(0,0,0,.05);
   }
-  .ql-content { padding: 24px 30px 30px; }
-  .ql-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  
+  .ql-info-pane {
+    width: 360px; flex-shrink: 0; border-left: 1px solid #e2e8f0;
+    background: #fff; padding: 24px 30px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  
+  .ql-header-section { display: flex; flex-direction: column; gap: 12px; }
+  .ql-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .ql-cat {
-    padding: 3px 12px; border-radius: 999px;
-    background: #dbeafe; color: #1d4ed8;
-    font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    padding: 4px 12px; border-radius: 999px;
+    background: #eff6ff; color: #2563eb;
+    font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
   }
-  .ql-year { font-size: .72rem; color: #9ca3af; font-weight: 500; }
-  .ql-title { font-size: 1.2rem; font-weight: 700; color: #111827; margin: 0 0 10px; line-height: 1.3; }
-  .ql-desc  { font-size: .84rem; color: #4b5563; line-height: 1.7; margin: 0 0 20px; }
-  .ql-label { font-size: .64rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #9ca3af; margin-bottom: 9px; }
-  .ql-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
-  .ql-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 12px; border-radius: 8px;
-    background: #f9fafb; border: 1px solid #e5e7eb;
-    font-size: .72rem; font-weight: 500; color: #374151;
+  .ql-year {
+    padding: 4px 12px; border-radius: 999px;
+    background: #f1f5f9; color: #475569;
+    font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
   }
-  .ql-chip img { width: 14px; height: 14px; }
-  .ql-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
-  .ql-tag { padding: 3px 10px; border-radius: 999px; background: #f3f4f6; color: #6b7280; font-size: .69rem; }
-  .ql-prose { font-size: .83rem; color: #374151; line-height: 1.72; margin-bottom: 18px; }
-  .ql-prose p { margin: 0 0 .7em; }
-  .ql-prose ul, .ql-prose ol { padding-left: 1.4em; margin: 0 0 .7em; }
+  .ql-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.25; letter-spacing: -0.01em; }
+  .ql-desc  { font-size: .9rem; color: #475569; line-height: 1.5; margin: 0; font-weight: 500; }
+  
+  .ql-prose { font-size: .85rem; color: #334155; line-height: 1.7; }
+  .ql-prose p { margin: 0 0 1em; }
+  .ql-prose ul, .ql-prose ol { padding-left: 1.5em; margin: 0 0 1em; }
   .ql-prose li { margin-bottom: .3em; }
-  .ql-cta-wrap { padding-top: 18px; border-top: 1px solid #f3f4f6; }
-  .ql-cta {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: #2563eb; color: #fff;
-    padding: 9px 22px; border-radius: 9px;
-    font-size: .8rem; font-weight: 600;
-    text-decoration: none; transition: background .15s;
+  .ql-prose a { color: #2563eb; text-decoration: none; font-weight: 500; }
+  .ql-prose a:hover { text-decoration: underline; }
+  
+  .ql-section-label { font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px; display: block; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
+  
+  .ql-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ql-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 8px;
+    background: #fff; border: 1px solid #e2e8f0;
+    font-size: .75rem; font-weight: 600; color: #334155;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
   }
-  .ql-cta:hover { background: #1d4ed8; }
-
+  .ql-chip img { width: 14px; height: 14px; object-fit: contain; }
+  
+  .ql-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ql-tag { padding: 4px 10px; border-radius: 6px; background: #f1f5f9; color: #475569; font-size: .75rem; font-weight: 500; }
+  
+  .ql-cta {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: #0f172a; color: #fff;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: .85rem; font-weight: 600;
+    text-decoration: none; transition: background .2s;
+    width: 100%; text-align: center;
+  }
+  .ql-cta:hover { background: #334155; }
+  
   /* Filmstrip */
   .ql-strip {
-    height: 88px; flex-shrink: 0;
-    background: #1c1c1f;
-    border-top: 1px solid rgba(255,255,255,.07);
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 14px;
+    height: 96px; flex-shrink: 0;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 16px;
     overflow-x: auto; scroll-behavior: smooth;
     scrollbar-width: none;
+    z-index: 10;
   }
   .ql-strip::-webkit-scrollbar { display: none; }
   .ql-strip-item {
-    flex-shrink: 0; width: 64px;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    cursor: pointer; border-radius: 6px; padding: 5px 5px 6px; border: none;
+    flex-shrink: 0; width: 80px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; border-radius: 8px; padding: 8px; border: none;
     background: transparent;
-    opacity: .5; transition: opacity .18s;
+    opacity: .6; transition: all .2s;
     outline: 2px solid transparent; outline-offset: 2px;
   }
-  .ql-strip-item:hover { opacity: .82; }
-  .ql-strip-item.ql-active { opacity: 1; outline-color: #60a5fa; }
-  .ql-strip-thumb { width: 54px; height: 36px; border-radius: 4px; object-fit: cover; display: block; }
+  .ql-strip-item:hover { opacity: 1; background: rgba(0,0,0,.05); }
+  .ql-strip-item.ql-active { opacity: 1; background: rgba(0,0,0,.08); outline-color: #3b82f6; }
+  .ql-strip-thumb { width: 64px; height: 44px; border-radius: 4px; object-fit: cover; display: block; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
   .ql-strip-ph {
-    width: 54px; height: 36px; border-radius: 4px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
+    width: 64px; height: 44px; border-radius: 4px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.15);
   }
   .ql-strip-name {
-    font-size: .46rem; color: rgba(255,255,255,.55); text-align: center; line-height: 1.25;
+    font-size: .55rem; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;
     width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
-  @media (max-width: 600px) {
-    dialog.ql-viewer { border-radius: 10px; width: 98vw; height: min(93svh, 720px); }
-    .ql-content { padding: 16px 18px 22px; }
-    .ql-title { font-size: 1rem; }
-    .ql-topbar-spacer { width: 52px; }
+  @media (max-width: 768px) {
+    dialog.ql-viewer { border-radius: 12px; width: 98vw; height: min(95svh, 850px); }
+    .ql-body { flex-direction: column; overflow-y: auto; padding-top: 0; }
+    .ql-preview-pane { flex: none; height: 320px; padding: 24px; position: relative; }
+    .ql-cover { max-width: 100%; max-height: 100%; box-shadow: 0 4px 20px rgba(0,0,0,.15); border-radius: 6px; }
+    .ql-info-pane { width: 100%; border-left: none; padding: 24px 20px; overflow-y: visible; }
+    .ql-topbar-left, .ql-win-title { display: none; }
+    .ql-nav-area { justify-content: space-between; width: 100%; }
+    .ql-lights { display: flex; }
   }
 </style>
 
@@ -164,47 +212,66 @@ const stackLogos: Record<string, string> = {
   data-slug={p.slug}
   data-folder={folder}
   data-title={p.data.title}
-  data-cover={p.data.cover ?? ''}
+  data-cover={coverUrl ?? ''}
+  data-cta={p.data.ctaHref ?? ''}
   aria-hidden="true"
 >
-  {p.data.cover && (
-    <img src={p.data.cover} class="ql-cover" alt={p.data.title} />
-  )}
-  <div class="ql-content">
-    <div class="ql-meta">
-      {p.data.category && <span class="ql-cat">{p.data.category}</span>}
-      {p.data.year     && <span class="ql-year">{p.data.year}</span>}
+  <div class="ql-body">
+    <div class="ql-preview-pane">
+      {coverUrl ? (
+        <img src={coverUrl} class="ql-cover" alt={p.data.title} />
+      ) : (
+        <div style="font-size: 3rem; opacity: 0.1;">No Preview</div>
+      )}
     </div>
-    <h2 class="ql-title">{p.data.title}</h2>
-    {p.data.description && <p class="ql-desc">{p.data.description}</p>}
-    <div class="ql-prose"><Content /></div>
-    {stack.length > 0 && (
-      <div class="ql-stack-sec">
-        <p class="ql-label">Tech Stack</p>
-        <div class="ql-chips">
-          {stack.map((t: string) => (
-            <span class="ql-chip">
-              {stackLogos[t] ? <img src={stackLogos[t]} width="14" height="14" alt={t} /> : null}
-              {t}
-            </span>
-          ))}
+    
+    <div class="ql-info-pane">
+      <div class="ql-header-section">
+        <div class="ql-meta">
+          {p.data.category && <span class="ql-cat">{p.data.category}</span>}
+          {p.data.year     && <span class="ql-year">{p.data.year}</span>}
         </div>
+        <h2 class="ql-title">{p.data.title}</h2>
+        {p.data.description && <p class="ql-desc">{p.data.description}</p>}
       </div>
-    )}
-    {tags.length > 0 && (
-      <div class="ql-tags">
-        {tags.map((tag: string) => <span class="ql-tag">{tag}</span>)}
+      
+      <div class="ql-main-content">
+        <div class="ql-prose"><Content /></div>
       </div>
-    )}
-    {p.data.ctaHref && (
-      <div class="ql-cta-wrap">
-        <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer" class="ql-cta">
-          {p.data.ctaLabel ?? 'View Project'}
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-      </div>
-    )}
+      
+      {stack.length > 0 && (
+        <div class="ql-section">
+          <span class="ql-section-label">Tech Stack</span>
+          <div class="ql-chips">
+            {stack.map((t: string) => (
+              <span class="ql-chip">
+                {stackLogos[t] ? <img src={stackLogos[t]} width="14" height="14" alt={t} loading="lazy" /> : null}
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {tags.length > 0 && (
+        <div class="ql-section">
+          <span class="ql-section-label">Tags</span>
+          <div class="ql-tags">
+            {tags.map((tag: string) => <span class="ql-tag">{tag}</span>)}
+          </div>
+        </div>
+      )}
+      
+      {p.data.ctaHref && (
+        <div class="ql-section" style="margin-top: auto;">
+          <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer" class="ql-cta">
+            {p.data.ctaLabel ?? 'View Project'}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      )}
+    </div>
   </div>
 </div>
