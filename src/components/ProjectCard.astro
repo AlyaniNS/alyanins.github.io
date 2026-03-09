@@ -1,154 +1,178 @@
-e---
+﻿---
 const { p } = Astro.props;
 const img = p.data.cover;
 const tags: string[] = p.data.tags ?? [];
 const stack: string[] = p.data.stack ?? [];
 const { Content } = await p.render();
 
-// Make DOM‑safe IDs from the slug
 const safeId = String(p.slug).toLowerCase().replace(/[^a-z0-9_-]/gi, '-');
-const cardId = `card-${safeId}`;
+const cardId  = `card-${safeId}`;
 const modalId = `modal-${safeId}`;
 
-// Stack logos mapping
+// Folder / card colours per category
+const palette: Record<string, { bg: string; body: string; tab: string; accent: string }> = {
+  'Company Profile Website': { bg: '#DBEAFE', body: '#60A5FA', tab: '#2563EB', accent: '#1d4ed8' },
+  'Data Analysis':           { bg: '#DCFCE7', body: '#4ADE80', tab: '#16A34A', accent: '#15803d' },
+  'Web Application':         { bg: '#F3E8FF', body: '#C4B5FD', tab: '#7C3AED', accent: '#6d28d9' },
+  'Research':                { bg: '#FEF3C7', body: '#FDE047', tab: '#D97706', accent: '#b45309' },
+  'Data Visualization':      { bg: '#CCFBF1', body: '#2DD4BF', tab: '#0F766E', accent: '#0d9488' },
+};
+const clr = palette[p.data.category] ?? { bg: '#F1F5F9', body: '#94A3B8', tab: '#475569', accent: '#334155' };
+
+// Stack logos
 const stackLogos: Record<string, string> = {
   'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
   'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
-  'Node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-  'Python': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-  'PHP': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
-  'MySQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
-  'Figma': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
-  'Tailwind': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
-  'Bootstrap': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg',
-  'Git': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
-  'GitHub': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
-  'Astro': 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
-  'Next.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
-  'Wordpress': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
-  'Laravel': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
-  'Filament': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/filamentphp/filamentphp-original.svg',
+  'Node.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+  'Python':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'PHP':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+  'MySQL':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+  'Figma':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+  'Tailwind':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
+  'Bootstrap':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg',
+  'Git':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+  'GitHub':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+  'Astro':      'https://astro.build/assets/press/astro-icon-light-gradient.svg',
+  'Next.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+  'Wordpress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+  'Laravel':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
+  'Botble CMS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
+  'Filament':   'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/filamentphp/filamentphp-original.svg',
 };
 ---
 
 <style is:global>
   dialog:not([open]) { display: none; }
-  dialog::backdrop { 
-    background: rgba(0,0,0,.6); 
-    backdrop-filter: blur(4px); 
-    -webkit-backdrop-filter: blur(4px); 
+  dialog::backdrop {
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  .fc-card {
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    position: relative;
+  }
+  .fc-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.14); }
+  .fc-card:hover .fc-folder-body  { transform: translateY(3px); }
+  .fc-card:hover .fc-folder-tab   { transform: rotate(-6deg) translateY(-2px); }
+  .fc-stage {
+    position: relative;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .fc-photos {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  .fc-photo {
+    position: absolute;
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 2px 4px 10px rgba(0,0,0,.18);
+    border: 2px solid #fff;
+    opacity: 0.85;
+  }
+  .fc-photo-1 { transform: rotate(-10deg) translate(-52px, -12px); }
+  .fc-photo-2 { transform: rotate(8deg)  translate(52px, -14px); }
+  .fc-photo-3 { transform: rotate(-4deg) translate(0px,  30px); }
+  .fc-folder  { z-index: 2; filter: drop-shadow(3px 6px 10px rgba(0,0,0,.22)); }
+  .fc-folder-tab  { transition: transform .25s ease; transform-origin: bottom left; }
+  .fc-folder-body { transition: transform .25s ease; }
+
+  .fc-info  { padding: 14px 18px 18px; background: #fff; }
+  .dark .fc-info { background: #1e293b; }
+  .fc-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 4px; }
+  .dark .fc-title { color: #f1f5f9; }
+  .fc-cat   { font-size: 0.68rem; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+  .dark .fc-cat { color: #94a3b8; }
+
+  /* modal prose */
+  .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .line-clamp-3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 </style>
 
-<div class="relative group" data-project-category={p.data.category}>
-  <!-- PROJECT CARD -->
+<div class="relative group">
+  <!-- â”€â”€ FOLDER GALLERY CARD â”€â”€ -->
   <article
     id={cardId}
     role="button"
     tabindex="0"
     aria-label={`Open details of ${p.data.title}`}
-    class="relative overflow-hidden rounded-2xl bg-white border border-navy-200 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-300 cursor-pointer h-full dark:bg-navy-800 dark:border-navy-700 dark:shadow-soft-dark"
+    class="fc-card focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 h-full flex flex-col"
   >
-    <!-- Background Image with Fade Effect -->
-    {img && (
-      <div class="relative h-48 overflow-hidden">
-        <img
-          src={img}
-          alt={p.data.title}
-          loading="lazy"
-          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <!-- Fade overlay -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-        
-        <!-- Year badge -->
-        {p.data.year && (
-          <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-navy-700 dark:bg-navy-800/90 dark:text-navy-200">
-            {p.data.year}
-          </div>
-        )}
-      </div>
-    )}
-
-    <!-- Content -->
-    <div class="p-6">
-      <!-- Category -->
-      {p.data.category && (
-        <span class="inline-block mb-3 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-medium uppercase tracking-wide">
-          {p.data.category}
-        </span>
+    <!-- Coloured stage with scattered photos + folder icon -->
+    <div class="fc-stage" style={`background:${clr.bg}`}>
+      {img && (
+        <div class="fc-photos">
+          <img src={img} alt="" loading="lazy" class="fc-photo fc-photo-1" aria-hidden="true" />
+          <img src={img} alt="" loading="lazy" class="fc-photo fc-photo-2" aria-hidden="true" />
+          <img src={img} alt="" loading="lazy" class="fc-photo fc-photo-3" aria-hidden="true" />
+        </div>
       )}
 
-      <!-- Project Name -->
-  <h3 class="text-base font-bold text-navy-900 mb-2 line-clamp-2 dark:text-navy-100">{p.data.title}</h3>
+      <!-- Folder SVG -->
+      <svg class="fc-folder" width="72" height="60" viewBox="0 0 72 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- tab -->
+        <path class="fc-folder-tab" d="M4 14C4 11.24 6.24 9 9 9H26L32 15H4Z" fill={clr.tab}/>
+        <!-- body -->
+        <path class="fc-folder-body" d="M4 14H68C70.21 14 72 15.79 72 18V54C72 56.21 70.21 58 68 58H4C1.79 58 0 56.21 0 54V18C0 15.79 1.79 4 4 14Z" fill={clr.body}/>
+      </svg>
 
-      <!-- Project Description -->
-  <p class="text-xs text-navy-600 mb-4 line-clamp-3 dark:text-navy-300">{p.data.description}</p>
+      {p.data.year && (
+        <span style="position:absolute;top:10px;right:12px;background:rgba(255,255,255,.85);border-radius:999px;padding:2px 10px;font-size:.65rem;font-weight:700;color:#334155;">{p.data.year}</span>
+      )}
+    </div>
 
-      <!-- Click to view indicator -->
-      <div class="flex items-center justify-between mt-auto pt-2">
-        <span class="text-xs text-navy-500 dark:text-navy-400">Click to view details</span>
-        <svg class="w-4 h-4 text-zinc-400 group-hover:text-brand-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
+    <!-- Text info -->
+    <div class="fc-info flex-1 flex flex-col justify-between">
+      <div>
+        <p class="fc-cat">{p.data.category}</p>
+        <h3 class="fc-title line-clamp-2">{p.data.title}</h3>
       </div>
+      <p style="font-size:.72rem;color:#64748b;margin-top:8px;" class="line-clamp-2 dark:text-slate-400">{p.data.description}</p>
     </div>
   </article>
 
-  <!-- MODAL -->
+  <!-- â”€â”€ MODAL (unchanged structure) â”€â”€ -->
   <dialog id={modalId} class="z-50 max-w-4xl w-[min(95vw,900px)] rounded-2xl p-0 max-h-[90vh] overflow-auto">
-    <!-- Modal Header with Image -->
     {img && (
       <div class="relative h-64 overflow-hidden rounded-t-2xl">
         <img src={img} alt={p.data.title} class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-        
-        <!-- Close button -->
-        <button 
-          type="button" 
-          data-close 
-          class="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors" 
-          aria-label="Close"
-        >
+        <button type="button" data-close
+          class="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors"
+          aria-label="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
           </svg>
         </button>
-
         {p.data.year && (
-          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 text-xs font-medium text-zinc-800">
-            {p.data.year}
-          </div>
+          <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 text-xs font-medium text-zinc-800">{p.data.year}</div>
         )}
       </div>
     )}
 
     <div class="p-8">
-      <!-- Header -->
       <div class="mb-6">
         {p.data.category && (
-          <span class="inline-block mb-3 px-4 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-medium uppercase tracking-wide">
-            {p.data.category}
-          </span>
+          <span class="inline-block mb-3 px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium uppercase tracking-wide">{p.data.category}</span>
         )}
-        
         <h2 class="text-sm font-bold text-zinc-900 mb-3">{p.data.title}</h2>
         <p class="text-xs text-zinc-600">{p.data.description}</p>
       </div>
 
-      <!-- Project Details -->
       {p.data.details && (
         <div class="mb-6">
           <h3 class="text-xs font-semibold text-zinc-900 mb-3">Project Details</h3>
@@ -156,12 +180,8 @@ const stackLogos: Record<string, string> = {
         </div>
       )}
 
-      <!-- Content from markdown -->
-      <div class="mb-6 prose prose-zinc max-w-none text-xs">
-        <Content />
-      </div>
+      <div class="mb-6 prose prose-zinc max-w-none text-xs"><Content /></div>
 
-      <!-- Tech Stack -->
       {stack.length > 0 && (
         <div class="mb-6">
           <h3 class="text-xs font-semibold text-zinc-900 mb-4">Tech Stack</h3>
@@ -169,15 +189,9 @@ const stackLogos: Record<string, string> = {
             {stack.map((tech: string) => (
               <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg">
                 {stackLogos[tech] ? (
-                  <img 
-                    src={stackLogos[tech]} 
-                    alt={tech}
-                    class="w-6 h-6"
-                  />
+                  <img src={stackLogos[tech]} alt={tech} class="w-6 h-6" />
                 ) : (
-                  <div class="w-6 h-6 bg-zinc-200 rounded flex items-center justify-center text-xs font-bold text-zinc-600">
-                    {tech.charAt(0)}
-                  </div>
+                  <div class="w-6 h-6 bg-zinc-200 rounded flex items-center justify-center text-xs font-bold text-zinc-600">{tech.charAt(0)}</div>
                 )}
                 <span class="text-xs font-medium text-zinc-700">{tech}</span>
               </div>
@@ -186,27 +200,21 @@ const stackLogos: Record<string, string> = {
         </div>
       )}
 
-      <!-- Tags -->
       {tags.length > 0 && (
         <div class="mb-6">
           <h3 class="text-xs font-semibold text-zinc-900 mb-3">Tags</h3>
           <div class="flex flex-wrap gap-2">
             {tags.map((tag: string) => (
-              <span class="tag">{tag}</span>
+              <span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-600 text-xs">{tag}</span>
             ))}
           </div>
         </div>
       )}
 
-      <!-- CTA Button -->
       {p.data.ctaHref && (
         <div class="pt-6 border-t border-zinc-200">
-          <a 
-            href={p.data.ctaHref} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors"
-          >
+          <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors">
             {p.data.ctaLabel ?? 'View Project'}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -217,49 +225,23 @@ const stackLogos: Record<string, string> = {
     </div>
   </dialog>
 
-  <!-- Script for modal functionality -->
   <script is:inline define:vars={{ cardId, modalId }}>
     (function() {
-      const card = document.getElementById(cardId);
+      const card  = document.getElementById(cardId);
       const modal = document.getElementById(modalId);
       if (!card || !modal) return;
-
       const hasNative = !!window.HTMLDialogElement && !!HTMLDialogElement.prototype.showModal;
-      const open = () => hasNative ? modal.showModal() : (modal.setAttribute('open', ''), modal.style.display = 'block');
-      const close = () => hasNative ? modal.close() : (modal.removeAttribute('open'), modal.style.display = 'none');
-
-      // Open modal
+      const open  = () => hasNative ? modal.showModal() : (modal.setAttribute('open',''), modal.style.display='block');
+      const close = () => hasNative ? modal.close()    : (modal.removeAttribute('open'),   modal.style.display='none');
       card.addEventListener('click', open);
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { 
-          e.preventDefault(); 
-          open(); 
-        }
-      });
-
-      // Close modal
+      card.addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); }});
       modal.addEventListener('click', (e) => {
-        const rect = modal.getBoundingClientRect();
-        const inside = e.clientX > rect.left && e.clientX < rect.right && e.clientY > rect.top && e.clientY < rect.bottom;
-        if (!inside) close();
+        const r = modal.getBoundingClientRect();
+        if (e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) close();
       });
-
       modal.querySelector('[data-close]')?.addEventListener('click', close);
-      
-      // ESC key support
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.hasAttribute('open')) {
-          close();
-        }
-      });
-
-      // Prevent CTA link from opening modal
-      const ctaLink = modal.querySelector('a[target="_blank"]');
-      if (ctaLink) {
-        ctaLink.addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
-      }
+      document.addEventListener('keydown', (e) => { if (e.key==='Escape'&&modal.hasAttribute('open')) close(); });
+      modal.querySelector('a[target="_blank"]')?.addEventListener('click', (e)=>e.stopPropagation());
     })();
   </script>
 </div>

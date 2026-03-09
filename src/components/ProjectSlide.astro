@@ -1,0 +1,210 @@
+---
+const { p, folder } = Astro.props;
+const stack: string[] = p.data.stack ?? [];
+const tags: string[]  = p.data.tags  ?? [];
+const { Content } = await p.render();
+
+const stackLogos: Record<string, string> = {
+  'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+  'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+  'Node.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+  'Python':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'PHP':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+  'MySQL':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+  'Figma':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+  'Tailwind':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
+  'Bootstrap':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg',
+  'Git':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+  'GitHub':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+  'Astro':      'https://astro.build/assets/press/astro-icon-dark.svg',
+  'Next.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+  'WordPress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+  'Laravel':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
+  'Botble CMS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
+  'Filament':   'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/filamentphp/filamentphp-original.svg',
+};
+---
+
+<style is:global>
+  /* ── Hide slide data divs ─────────────────────────────── */
+  .ql-slide { display: none; }
+
+  /* ── Quick Look viewer shell ──────────────────────────── */
+  dialog.ql-viewer {
+    position: fixed; inset: 0; margin: auto;
+    width: min(94vw, 740px);
+    height: min(90svh, 720px);
+    border-radius: 12px; border: none; padding: 0; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 32px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.2);
+    background: #fff;
+  }
+  dialog.ql-viewer:not([open]) { display: none; }
+  dialog.ql-viewer::backdrop   { background: rgba(0,0,0,.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+  /* Topbar */
+  .ql-topbar {
+    display: flex; align-items: center; gap: 0;
+    background: #252528;
+    padding: 9px 14px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    user-select: none;
+  }
+  .ql-lights { display: flex; gap: 7px; align-items: center; flex-shrink: 0; margin-right: 14px; }
+  .ql-tl { width: 13px; height: 13px; border-radius: 50%; border: none; cursor: default; padding: 0; flex-shrink: 0; }
+  .ql-tl-red    { background: #ff5f57; cursor: pointer; }
+  .ql-tl-yellow { background: #febc2e; }
+  .ql-tl-green  { background: #28c840; }
+  .ql-tl-red:hover { background: #e64940; }
+
+  .ql-nav-area { display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-right: 10px; }
+  .ql-nav-btn {
+    width: 24px; height: 24px; border-radius: 5px; border: none;
+    background: rgba(255,255,255,.1); color: #ccc; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+    transition: background .15s;
+  }
+  .ql-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,.22); }
+  .ql-nav-btn:disabled { opacity: .28; cursor: default; }
+  .ql-nav-btn svg { width: 13px; height: 13px; }
+  .ql-counter { font-size: .65rem; color: rgba(255,255,255,.35); min-width: 32px; text-align: center; font-variant-numeric: tabular-nums; }
+  .ql-win-title {
+    flex: 1; text-align: center;
+    font-size: .74rem; font-weight: 600; color: rgba(255,255,255,.65);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px;
+  }
+  .ql-topbar-spacer { width: 80px; flex-shrink: 0; }
+
+  /* Body */
+  .ql-body { flex: 1; overflow-y: auto; background: #fff; min-height: 0; }
+  .ql-cover {
+    width: 100%; aspect-ratio: 16/5; object-fit: cover;
+    object-position: center top; display: block;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .ql-content { padding: 24px 30px 30px; }
+  .ql-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .ql-cat {
+    padding: 3px 12px; border-radius: 999px;
+    background: #dbeafe; color: #1d4ed8;
+    font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .ql-year { font-size: .72rem; color: #9ca3af; font-weight: 500; }
+  .ql-title { font-size: 1.2rem; font-weight: 700; color: #111827; margin: 0 0 10px; line-height: 1.3; }
+  .ql-desc  { font-size: .84rem; color: #4b5563; line-height: 1.7; margin: 0 0 20px; }
+  .ql-label { font-size: .64rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #9ca3af; margin-bottom: 9px; }
+  .ql-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+  .ql-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border-radius: 8px;
+    background: #f9fafb; border: 1px solid #e5e7eb;
+    font-size: .72rem; font-weight: 500; color: #374151;
+  }
+  .ql-chip img { width: 14px; height: 14px; }
+  .ql-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .ql-tag { padding: 3px 10px; border-radius: 999px; background: #f3f4f6; color: #6b7280; font-size: .69rem; }
+  .ql-prose { font-size: .83rem; color: #374151; line-height: 1.72; margin-bottom: 18px; }
+  .ql-prose p { margin: 0 0 .7em; }
+  .ql-prose ul, .ql-prose ol { padding-left: 1.4em; margin: 0 0 .7em; }
+  .ql-prose li { margin-bottom: .3em; }
+  .ql-cta-wrap { padding-top: 18px; border-top: 1px solid #f3f4f6; }
+  .ql-cta {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #2563eb; color: #fff;
+    padding: 9px 22px; border-radius: 9px;
+    font-size: .8rem; font-weight: 600;
+    text-decoration: none; transition: background .15s;
+  }
+  .ql-cta:hover { background: #1d4ed8; }
+
+  /* Filmstrip */
+  .ql-strip {
+    height: 88px; flex-shrink: 0;
+    background: #1c1c1f;
+    border-top: 1px solid rgba(255,255,255,.07);
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    overflow-x: auto; scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  .ql-strip::-webkit-scrollbar { display: none; }
+  .ql-strip-item {
+    flex-shrink: 0; width: 64px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; border-radius: 6px; padding: 5px 5px 6px; border: none;
+    background: transparent;
+    opacity: .5; transition: opacity .18s;
+    outline: 2px solid transparent; outline-offset: 2px;
+  }
+  .ql-strip-item:hover { opacity: .82; }
+  .ql-strip-item.ql-active { opacity: 1; outline-color: #60a5fa; }
+  .ql-strip-thumb { width: 54px; height: 36px; border-radius: 4px; object-fit: cover; display: block; }
+  .ql-strip-ph {
+    width: 54px; height: 36px; border-radius: 4px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ql-strip-name {
+    font-size: .46rem; color: rgba(255,255,255,.55); text-align: center; line-height: 1.25;
+    width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    dialog.ql-viewer { border-radius: 10px; width: 98vw; height: min(93svh, 720px); }
+    .ql-content { padding: 16px 18px 22px; }
+    .ql-title { font-size: 1rem; }
+    .ql-topbar-spacer { width: 52px; }
+  }
+</style>
+
+<!-- Hidden project data — injected into QL viewer by JS -->
+<div
+  id={`ql-${p.slug}`}
+  class="ql-slide"
+  data-slug={p.slug}
+  data-folder={folder}
+  data-title={p.data.title}
+  data-cover={p.data.cover ?? ''}
+  aria-hidden="true"
+>
+  {p.data.cover && (
+    <img src={p.data.cover} class="ql-cover" alt={p.data.title} />
+  )}
+  <div class="ql-content">
+    <div class="ql-meta">
+      {p.data.category && <span class="ql-cat">{p.data.category}</span>}
+      {p.data.year     && <span class="ql-year">{p.data.year}</span>}
+    </div>
+    <h2 class="ql-title">{p.data.title}</h2>
+    {p.data.description && <p class="ql-desc">{p.data.description}</p>}
+    <div class="ql-prose"><Content /></div>
+    {stack.length > 0 && (
+      <div class="ql-stack-sec">
+        <p class="ql-label">Tech Stack</p>
+        <div class="ql-chips">
+          {stack.map((t: string) => (
+            <span class="ql-chip">
+              {stackLogos[t] ? <img src={stackLogos[t]} width="14" height="14" alt={t} /> : null}
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+    {tags.length > 0 && (
+      <div class="ql-tags">
+        {tags.map((tag: string) => <span class="ql-tag">{tag}</span>)}
+      </div>
+    )}
+    {p.data.ctaHref && (
+      <div class="ql-cta-wrap">
+        <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer" class="ql-cta">
+          {p.data.ctaLabel ?? 'View Project'}
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    )}
+  </div>
+</div>

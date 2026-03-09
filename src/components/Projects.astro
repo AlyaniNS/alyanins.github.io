@@ -15,8 +15,12 @@ const filtered = active === 'All'
   ? all
   : all.filter(p => (p.data.category ?? '').trim() === active);
 ---
-<section id="work" class="mt-14">
-  <h2 class="text-sm font-bold text-center">Projects</h2>
+<section id="work" class="mt-20">
+  <div class="flex items-center gap-3 mb-2">
+    <svg width="22" height="18" viewBox="0 0 52 44" fill="none" class="flex-shrink-0"><path d="M2 10C2 7.79 3.79 6 6 6H18L22 10H46C48.21 10 50 11.79 50 14V38C50 40.21 48.21 42 46 42H6C3.79 42 2 40.21 2 38V10Z" fill="#60A5FA"/><path d="M2 10C2 7.79 3.79 6 6 6H18L22 10H2Z" fill="#3B82F6"/></svg>
+    <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">Projects</h2>
+  </div>
+  <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Click any folder to open details</p>
 
     <div class="mt-4 flex justify-center">
       <TagFilter categories={uniqueCategories} active={active} />
@@ -25,7 +29,7 @@ const filtered = active === 'All'
   {filtered.length === 0 ? (
     <p class="mt-8 text-xs text-zinc-500">No projects match "{active}".</p>
   ) : (
-    <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-6 grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {filtered.map((p) => (
         <ProjectCard p={p} />
       ))}
