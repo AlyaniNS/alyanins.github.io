@@ -5,6 +5,6 @@ import mdx from '@astrojs/mdx';
 import icon from 'astro-icon';
 
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://alyanins.tech',
   integrations: [tailwind(), sitemap(), mdx(), icon()],
 });
