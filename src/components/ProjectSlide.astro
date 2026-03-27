@@ -2,6 +2,18 @@
 const { p, folder } = Astro.props;
 const stack: string[] = p.data.stack ?? [];
 const tags: string[]  = p.data.tags  ?? [];
+const ctas: Array<{ label: string; href: string; variant: 'primary' | 'secondary' }> = [];
+
+if (p.data.repoHref) {
+  ctas.push({ label: p.data.repoLabel ?? 'View Repository', href: p.data.repoHref, variant: 'primary' });
+}
+if (p.data.resultHref) {
+  ctas.push({ label: p.data.resultLabel ?? 'View Result', href: p.data.resultHref, variant: 'secondary' });
+}
+if (p.data.ctaHref && !ctas.some((cta) => cta.href === p.data.ctaHref)) {
+  ctas.unshift({ label: p.data.ctaLabel ?? 'View Project', href: p.data.ctaHref, variant: 'primary' });
+}
+
 const { Content } = await p.render();
 
 const stackLogos: Record<string, string> = {
@@ -9,6 +21,9 @@ const stackLogos: Record<string, string> = {
   'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
   'Node.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
   'Python':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'Pandas':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+  'Scikit-learn': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg',
+  'Jupyter Notebook': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
   'PHP':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
   'MySQL':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
   'Figma':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
@@ -19,15 +34,17 @@ const stackLogos: Record<string, string> = {
   'Astro':      'https://astro.build/assets/press/astro-icon-dark.svg',
   'Next.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
   'WordPress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+  'Wordpress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
   'Laravel':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
   'Botble CMS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
   'Filament':   'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/filamentphp/filamentphp-original.svg',
 };
 
 let coverUrl = p.data.cover;
-if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
+const repoForPreview = p.data.repoHref ?? p.data.ctaHref;
+if (!coverUrl && repoForPreview?.startsWith('https://github.com/')) {
   try {
-    const urlObj = new URL(p.data.ctaHref);
+    const urlObj = new URL(repoForPreview);
     const pathParts = urlObj.pathname.split('/').filter(Boolean);
     if (pathParts.length >= 2) {
       coverUrl = `https://opengraph.githubassets.com/1/${pathParts[0]}/${pathParts[1]}`;
@@ -94,8 +111,18 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
   }
 
   /* Body (macOS style - Split View) */
-  .ql-body { flex: 1; display: flex; flex-direction: row; background: #fff; min-height: 0; overflow: hidden; }
+  .ql-body { flex: 1; display: flex; flex-direction: row; background: #fff; min-height: 0; overflow: hidden; overflow-x: hidden; }
   
+  .ql-preview-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    border-right: 1px solid #e2e8f0;
+    background: #fff;
+  }
+
   .ql-preview-pane {
     flex: 1; display: flex; align-items: center; justify-content: center;
     background-color: #f8fafc;
@@ -108,8 +135,16 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
     border-radius: 8px; box-shadow: 0 10px 30px -5px rgba(0,0,0,.15), 0 0 0 1px rgba(0,0,0,.05);
   }
   
+  .ql-preview-stack {
+    padding: 16px 20px;
+    box-sizing: border-box;
+    border-top: 1px solid #e2e8f0;
+    background: #fff;
+  }
+
   .ql-info-pane {
-    width: 360px; flex-shrink: 0; border-left: 1px solid #e2e8f0;
+    width: 360px; flex-shrink: 0;
+    box-sizing: border-box;
     background: #fff; padding: 24px 30px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 24px;
   }
@@ -160,6 +195,14 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
     width: 100%; text-align: center;
   }
   .ql-cta:hover { background: #334155; }
+  .ql-cta-secondary {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+  }
+  .ql-cta-secondary:hover {
+    background: #e2e8f0;
+  }
   
   /* Filmstrip */
   .ql-strip {
@@ -196,7 +239,9 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
   @media (max-width: 768px) {
     dialog.ql-viewer { border-radius: 12px; width: 98vw; height: min(95svh, 850px); }
     .ql-body { flex-direction: column; overflow-y: auto; padding-top: 0; }
-    .ql-preview-pane { flex: none; height: 320px; padding: 24px; position: relative; }
+    .ql-preview-col { border-right: none; }
+    .ql-preview-pane { flex: none; height: 250px; padding: 16px; position: relative; }
+    .ql-preview-stack { padding: 12px 16px; }
     .ql-cover { max-width: 100%; max-height: 100%; box-shadow: 0 4px 20px rgba(0,0,0,.15); border-radius: 6px; }
     .ql-info-pane { width: 100%; border-left: none; padding: 24px 20px; overflow-y: visible; }
     .ql-topbar-left, .ql-win-title { display: none; }
@@ -213,15 +258,31 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
   data-folder={folder}
   data-title={p.data.title}
   data-cover={coverUrl ?? ''}
-  data-cta={p.data.ctaHref ?? ''}
+  data-cta={repoForPreview ?? ''}
   aria-hidden="true"
 >
   <div class="ql-body">
-    <div class="ql-preview-pane">
-      {coverUrl ? (
-        <img src={coverUrl} class="ql-cover" alt={p.data.title} />
-      ) : (
-        <div style="font-size: 3rem; opacity: 0.1;">No Preview</div>
+    <div class="ql-preview-col">
+      <div class="ql-preview-pane">
+        {coverUrl ? (
+          <img src={coverUrl} class="ql-cover" alt={p.data.title} />
+        ) : (
+          <div style="font-size: 3rem; opacity: 0.1;">No Preview</div>
+        )}
+      </div>
+
+      {stack.length > 0 && (
+        <div class="ql-preview-stack">
+          <span class="ql-section-label">Tech Stack</span>
+          <div class="ql-chips">
+            {stack.map((t: string) => (
+              <span class="ql-chip">
+                {stackLogos[t] ? <img src={stackLogos[t]} width="14" height="14" alt={t} loading="lazy" /> : null}
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
       )}
     </div>
     
@@ -239,20 +300,6 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
         <div class="ql-prose"><Content /></div>
       </div>
       
-      {stack.length > 0 && (
-        <div class="ql-section">
-          <span class="ql-section-label">Tech Stack</span>
-          <div class="ql-chips">
-            {stack.map((t: string) => (
-              <span class="ql-chip">
-                {stackLogos[t] ? <img src={stackLogos[t]} width="14" height="14" alt={t} loading="lazy" /> : null}
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      
       {tags.length > 0 && (
         <div class="ql-section">
           <span class="ql-section-label">Tags</span>
@@ -262,14 +309,23 @@ if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
         </div>
       )}
       
-      {p.data.ctaHref && (
+      {ctas.length > 0 && (
         <div class="ql-section" style="margin-top: auto;">
-          <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer" class="ql-cta">
-            {p.data.ctaLabel ?? 'View Project'}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            {ctas.map((cta) => (
+              <a
+                href={cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class:list={['ql-cta', cta.variant === 'secondary' && 'ql-cta-secondary']}
+              >
+                {cta.label}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </div>

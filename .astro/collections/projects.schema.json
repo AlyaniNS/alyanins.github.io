@@ -16,6 +16,18 @@
         "ctaHref": {
           "type": "string"
         },
+        "repoLabel": {
+          "type": "string"
+        },
+        "repoHref": {
+          "type": "string"
+        },
+        "resultLabel": {
+          "type": "string"
+        },
+        "resultHref": {
+          "type": "string"
+        },
         "cover": {
           "type": "string"
         },

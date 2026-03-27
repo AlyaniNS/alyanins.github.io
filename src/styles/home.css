@@ -470,12 +470,12 @@ dialog.finder-window:not([open]) {
 }
 
 .finder-titlebar {
-  background: linear-gradient(180deg, #ebebeb 0%, #d5d5d5 100%);
+  background: #ffffff;
   padding: 11px 16px 9px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid #bbb;
+  border-bottom: 1px solid #e5e7eb;
   user-select: none;
   position: sticky;
   top: 0;

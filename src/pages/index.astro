@@ -14,7 +14,7 @@ const stackList = ['Astro','Laravel','WordPress','JavaScript','TypeScript','PHP'
 const stackIcons: Record<string,string> = {
   'Astro':      'https://astro.build/assets/press/astro-icon-dark.svg',
   'Laravel':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
-  'WordPress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+  'WordPress':  'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/wordpress/wordpress-plain.svg',
   'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
   'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
   'PHP':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
@@ -53,6 +53,7 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
   <meta property="twitter:url" content="https://alyanins.tech/" />
   <meta property="twitter:title" content="Alyani Septalia | Portfolio" />
   <meta property="twitter:description" content="" />
+  <meta name="robots" content="index, follow" />
 
 </head>
 <body>
@@ -223,8 +224,9 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
       <div class="finder-grid">
         {dataProjects.map(p => {
           let coverUrl = p.data.cover;
-          if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
-            const urlObj = new URL(p.data.ctaHref);
+          const repoForPreview = p.data.repoHref ?? p.data.ctaHref;
+          if (!coverUrl && repoForPreview?.startsWith('https://github.com/')) {
+            const urlObj = new URL(repoForPreview);
             const pathParts = urlObj.pathname.split('/').filter(Boolean);
             if (pathParts.length >= 2) {
               const owner = pathParts[0];
@@ -273,8 +275,9 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
       <div class="finder-grid">
         {webProjects.map(p => {
           let coverUrl = p.data.cover;
-          if (!coverUrl && p.data.ctaHref?.startsWith('https://github.com/')) {
-            const urlObj = new URL(p.data.ctaHref);
+          const repoForPreview = p.data.repoHref ?? p.data.ctaHref;
+          if (!coverUrl && repoForPreview?.startsWith('https://github.com/')) {
+            const urlObj = new URL(repoForPreview);
             const pathParts = urlObj.pathname.split('/').filter(Boolean);
             if (pathParts.length >= 2) {
               const owner = pathParts[0];
@@ -331,15 +334,6 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
       <button id="ql-close" class="ql-tl ql-tl-red" aria-label="Close"></button>
       <div class="ql-tl ql-tl-yellow"></div>
       <div class="ql-tl ql-tl-green"></div>
-    </div>
-    <div class="ql-nav-area">
-      <button id="ql-prev" class="ql-nav-btn" aria-label="Previous project">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <span id="ql-counter" class="ql-counter"></span>
-      <button id="ql-next" class="ql-nav-btn" aria-label="Next project">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
     </div>
     <span id="ql-win-title" class="ql-win-title" style="display:none;"></span>
     <div class="ql-topbar-spacer" style="display:none;"></div>
@@ -425,9 +419,9 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
   const qlBody    = document.getElementById('ql-body')!;
   const qlStrip   = document.getElementById('ql-strip')!;
   const qlWinTitle = document.getElementById('ql-win-title')!;
-  const qlCounter = document.getElementById('ql-counter')!;
-  const qlPrevBtn = document.getElementById('ql-prev')     as HTMLButtonElement;
-  const qlNextBtn = document.getElementById('ql-next')     as HTMLButtonElement;
+  const qlCounter = document.getElementById('ql-counter');
+  const qlPrevBtn = document.getElementById('ql-prev') as HTMLButtonElement | null;
+  const qlNextBtn = document.getElementById('ql-next') as HTMLButtonElement | null;
 
   interface SlideInfo { slug: string; folder: string; title: string; cover: string; el: HTMLElement; }
   let qlSlides: SlideInfo[] = [];
@@ -483,9 +477,9 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
     const s = qlSlides[qlIdx];
     qlBody.innerHTML = s.el.innerHTML;
     qlWinTitle.textContent = s.title;
-    qlCounter.textContent  = `${qlIdx + 1} / ${qlSlides.length}`;
-    qlPrevBtn.disabled = qlIdx === 0;
-    qlNextBtn.disabled = qlIdx === qlSlides.length - 1;
+    if (qlCounter) qlCounter.textContent = `${qlIdx + 1} / ${qlSlides.length}`;
+    if (qlPrevBtn) qlPrevBtn.disabled = qlIdx === 0;
+    if (qlNextBtn) qlNextBtn.disabled = qlIdx === qlSlides.length - 1;
     qlBody.scrollTop = 0;
     qlStrip.querySelectorAll('.ql-strip-item').forEach((item, i) => {
       item.classList.toggle('ql-active', i === qlIdx);
@@ -511,8 +505,8 @@ import HuaweiLogo from '../components/Huawei_logo.svg';
     const r = qlViewer.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeViewer();
   });
-  qlPrevBtn.addEventListener('click', () => goTo(qlIdx - 1));
-  qlNextBtn.addEventListener('click', () => goTo(qlIdx + 1));
+  if (qlPrevBtn) qlPrevBtn.addEventListener('click', () => goTo(qlIdx - 1));
+  if (qlNextBtn) qlNextBtn.addEventListener('click', () => goTo(qlIdx + 1));
 
   // Keyboard arrows
   document.addEventListener('keydown', e => {

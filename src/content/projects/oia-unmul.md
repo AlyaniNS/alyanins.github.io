@@ -8,6 +8,6 @@ cover: "/assets/projects/oia-unmul.png"
 featured: true
 order: 4
 year: 2023
-stack: ["Wordpress", "Elementor", "PHP"]
+stack: ["Wordpress", "PHP"]
 details: "Program information, event & registration forms, news & announcements, quick-links for international students."
 ---

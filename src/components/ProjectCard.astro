@@ -3,6 +3,19 @@ const { p } = Astro.props;
 const img = p.data.cover;
 const tags: string[] = p.data.tags ?? [];
 const stack: string[] = p.data.stack ?? [];
+const ctas = [
+  p.data.repoHref
+    ? { label: p.data.repoLabel ?? 'View Repository', href: p.data.repoHref, variant: 'primary' }
+    : null,
+  p.data.resultHref
+    ? { label: p.data.resultLabel ?? 'View Result', href: p.data.resultHref, variant: 'secondary' }
+    : null,
+].filter(Boolean) as Array<{ label: string; href: string; variant: 'primary' | 'secondary' }>;
+
+if (ctas.length === 0 && p.data.ctaHref) {
+  ctas.push({ label: p.data.ctaLabel ?? 'View Project', href: p.data.ctaHref, variant: 'primary' });
+}
+
 const { Content } = await p.render();
 
 const safeId = String(p.slug).toLowerCase().replace(/[^a-z0-9_-]/gi, '-');
@@ -25,6 +38,9 @@ const stackLogos: Record<string, string> = {
   'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
   'Node.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
   'Python':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'Pandas':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+  'Scikit-learn': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg',
+  'Jupyter Notebook': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
   'PHP':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
   'MySQL':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
   'Figma':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
@@ -34,6 +50,7 @@ const stackLogos: Record<string, string> = {
   'GitHub':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
   'Astro':      'https://astro.build/assets/press/astro-icon-light-gradient.svg',
   'Next.js':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+  'WordPress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
   'Wordpress':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
   'Laravel':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
   'Botble CMS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
@@ -211,15 +228,25 @@ const stackLogos: Record<string, string> = {
         </div>
       )}
 
-      {p.data.ctaHref && (
+      {ctas.length > 0 && (
         <div class="pt-6 border-t border-zinc-200">
-          <a href={p.data.ctaHref} target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors">
-            {p.data.ctaLabel ?? 'View Project'}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <div class="flex flex-wrap gap-2">
+            {ctas.map((cta) => (
+              <a href={cta.href} target="_blank" rel="noopener noreferrer"
+                class:list={[
+                  'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors',
+                  cta.variant === 'primary'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-800',
+                ]}
+              >
+                {cta.label}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17l9.2-9.2M17 17V7H7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -241,7 +268,9 @@ const stackLogos: Record<string, string> = {
       });
       modal.querySelector('[data-close]')?.addEventListener('click', close);
       document.addEventListener('keydown', (e) => { if (e.key==='Escape'&&modal.hasAttribute('open')) close(); });
-      modal.querySelector('a[target="_blank"]')?.addEventListener('click', (e)=>e.stopPropagation());
+      modal.querySelectorAll('a[target="_blank"]').forEach((link) => {
+        link.addEventListener('click', (e) => e.stopPropagation());
+      });
     })();
   </script>
 </div>
