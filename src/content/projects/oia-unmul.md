@@ -1,6 +1,6 @@
 ---
 title: "Office of International Affairs Mulawarman University"
-description: "OIA UNMUL is the international office that manages global partnerships, student mobility programs, and international collaborations for Universitas Mulawarman."
+description: "OIA Unmul manages global partnerships and student mobility programs and needed a website that reflects the university's international reach. I built their WordPress site to serve as the primary communication hub for prospective partner institutions, exchange students, and international collaboration inquiries."
 category: "Company Profile Website"
 ctaLabel: "Visit Website"
 ctaHref: "https://oia.unmul.ac.id"

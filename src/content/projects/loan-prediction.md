@@ -1,6 +1,6 @@
 ---
 title: "Loan Prediction Based on Customer Behavior"
-description: "Team-based machine learning project completed as the final project of the Rakamin Academy Data Science Bootcamp (SIB Batch 5). Uses available dataset to perform data preprocessing, exploratory data analysis, feature engineering, and classification modeling to identify customers with high loan default risk and support data-driven loan approval decisions."
+description: "Manual loan approval processes are slow and inconsistent, and without a data-driven risk framework, lenders struggle to catch high-risk applicants early. As part of a 7-person team in Rakamin Academy's bootcamp, I contributed to building a loan default prediction model using the 5C credit analysis framework. Key findings: low-income customers carry a 15% default rate compared to 12% for high-income, single millennials show a 12.5% default risk, and renters default at a higher rate than homeowners — all actionable for credit scoring policy and automated approval systems."
 category: "Data Analysis"
 tags: ["Machine Learning", "Classification", "EDA", "Credit Risk"]
 ctaLabel: "View on GitHub"
@@ -10,5 +10,5 @@ resultHref: "https://github.com/AlyaniNS/Loan-Prediction-Based-on-Customer-Behav
 featured: true
 order: 4
 year: 2023
-stack: ["Python", "Jupyter Notebook", "MySQL"]
+stack: ["Python", "Jupyter Notebook", "SQL"]
 ---
