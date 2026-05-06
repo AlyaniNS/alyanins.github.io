@@ -122,7 +122,7 @@ const sharePayload = JSON.stringify({
   url: siteUrl,
 });
 const shareScript = `if (navigator.share) { navigator.share(${sharePayload}); } else { navigator.clipboard.writeText(${JSON.stringify(siteUrl)}); }`;
-const cvUrl = "/assets/files_CV_Alyani_Septalia.pdf";
+const cvUrl = "/assets/files/CV_Alyani_Septalia.pdf";
 ---
 
 <!doctype html>
@@ -323,11 +323,9 @@ const cvUrl = "/assets/files_CV_Alyani_Septalia.pdf";
           {
             featuredProjects.map((p) => {
               const tags =
-                p.data.tags && p.data.tags.length
-                  ? p.data.tags
-                  : p.data.stack && p.data.stack.length
-                    ? p.data.stack
-                    : [p.data.category];
+                (p.data as any).tags?.length ? (p.data as any).tags : 
+                p.data.stack?.length ? p.data.stack : 
+                [p.data.category];
               const modalId = `project-${p.slug}`;
               const thumbSrc = p.data.cover ?? null; // GH OG image only used in modal
               return (
@@ -347,7 +345,7 @@ const cvUrl = "/assets/files_CV_Alyani_Septalia.pdf";
                   </div>
                   <div class="p-body">
                     <div class="p-tags">
-                      {tags.map((tag) => {
+                      {tags.map((tag: string) => {
                         const cleanItem = tag.toLowerCase().replace(" notebook", "");
                         const found = [...coreSkills, ...optionalSkills].find(s => s.label.toLowerCase().startsWith(cleanItem));
                         return (
@@ -375,11 +373,9 @@ const cvUrl = "/assets/files_CV_Alyani_Septalia.pdf";
     {
       featuredProjects.map((p) => {
         const tags =
-          p.data.tags && p.data.tags.length
-            ? p.data.tags
-            : p.data.stack && p.data.stack.length
-              ? p.data.stack
-              : [p.data.category];
+          (p.data as any).tags?.length ? (p.data as any).tags : 
+          p.data.stack?.length ? p.data.stack : 
+          [p.data.category];
         const modalId = `project-${p.slug}`;
         const ghData = ghDataMap[p.slug];
         const langColor = ghData?.language
