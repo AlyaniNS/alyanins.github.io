@@ -4,20 +4,19 @@ const projects = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
-    ctaLabel: z.string().optional(),
-    ctaHref: z.string().optional(),
-    repoLabel: z.string().optional(),
-    repoHref: z.string().optional(),
-    resultLabel: z.string().optional(),
-    resultHref: z.string().optional(),
-    cover: z.string().optional(),
+    description: z.string().nullable().optional(),
+    ctaLabel: z.string().nullable().optional(),
+    ctaHref: z.string().nullable().optional(),
+    repoLabel: z.string().nullable().optional(),
+    repoHref: z.string().nullable().optional(),
+    resultLabel: z.string().nullable().optional(),
+    resultHref: z.string().nullable().optional(),
+    cover: z.string().nullable().optional(),
     featured: z.boolean().default(false),
-    order: z.number().default(0),
-    year: z.number().optional(),
-    stack: z.array(z.string()).optional(),
-  category: z.string(),
-    details: z.string().optional()
+    year: z.number().nullable().optional(),
+    stack: z.array(z.string()).nullable().optional(),
+    category: z.string(),
+    details: z.string().nullable().optional()
   })
 });
 
@@ -27,6 +26,11 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.string(),
+    cover: z.string().optional(),
+    author: z.string().optional(),
+    authorImage: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    readTime: z.string().optional(),
   })
 });
 

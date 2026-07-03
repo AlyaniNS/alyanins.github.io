@@ -1,0 +1,372 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const resumeUrl = "https://drive.google.com/file/d/1ebZUsw1ylfhqDaDfG-9bqZbrOFDf9OlH/view?usp=sharing";
+const headshotUrl = "https://drive.google.com/file/d/1oE4wcI-QvgA7Au4mdu3FcSeF6Eztj5sB/view?usp=sharing";
+
+const education = [
+  {
+    role: "Bachelor of Computer Science",
+    institution: "Universitas Mulawarman",
+    period: "2020–2026",
+    logo: "/assets/icons/unmul.png",
+    subItems: [
+      {
+        role: "Data Science Intensive Bootcamp",
+        institution: "Rakamin Academy",
+        period: "2023",
+        logo: "/assets/icons/rakamin.png"
+      },
+      {
+        role: "Bachelor of Information Technology (Exchange Program)",
+        institution: "Universitas Muhammadiyah Sidoarjo",
+        period: "2022–2023",
+        logo: "/assets/icons/umsida.png"
+      }
+    ]
+  },
+];
+
+const certifications = [
+  {
+    title: "Power BI Data Analyst Associate",
+    issuer: "Microsoft",
+    period: "2024",
+    logo: "/assets/icons/microsoft.png",
+  },
+];
+
+const coreSkills = [
+  {
+    label: "Python",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+  },
+  {
+    label: "SQL",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+  },
+  {
+    label: "Power BI",
+    icon: "/assets/icons/powerbi.png",
+  },
+  {
+    label: "Tableau",
+    icon: "/assets/icons/tableau.png",
+  },
+  {
+    label: "Looker",
+    icon: "https://cdn.simpleicons.org/looker/4285F4",
+  },
+  {
+    label: "Jupyter Notebook",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original.svg",
+  },
+  {
+    label: "Excel",
+    icon: "/assets/icons/excel.png",
+  },
+];
+
+const secondarySkills = [
+  {
+    label: "Git",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+  },
+  {
+    label: "Notion",
+    icon: "https://cdn.simpleicons.org/notion/000000",
+  },
+  {
+    label: "Figma",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+  },
+];
+---
+
+<Layout
+  title="About | Alyani Septalia"
+  description="Get to know Alyani Septalia"
+>
+<div class="flex flex-col gap-10 w-full">
+  <!-- Page Header -->
+  <div class="flex flex-col gap-3">
+    <h1
+      class="text-3xl md:text-4xl font-mono uppercase tracking-wide text-forest-dark"
+    >
+      get to know me
+    </h1>
+    <p class="text-sage-muted text-sm">
+        Dive into who I am, what drives me, and why I love what I do.
+    </p>
+    <!-- Main Content Grid -->
+    <div
+      class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mt-4"
+    >
+<!-- Left Column: Photo & Contacts -->
+<div class="lg:col-span-5 order-1 lg:order-1 flex flex-col items-center gap-6">
+  
+  <!-- Photo Container with Card Flip -->
+  <div class="w-48 h-48 md:w-56 md:h-56 perspective-800">
+    <div class="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] hover:[transform:rotateY(180deg)]">
+      
+      <!-- Front: Photo -->
+      <div class="absolute inset-0 rounded-xl overflow-hidden border border-sage-border/30 bg-cream [backface-visibility:hidden]">
+        <img 
+          src="/assets/profile.png" 
+          alt="Alyani Septalia Portrait" 
+          class="w-full h-full object-cover grayscale-[15%]" 
+        />
+      </div>
+      
+      <!-- Back: Information -->
+      <div class="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl bg-forest-dark border border-sage-border/30 flex flex-col items-center justify-center p-6">
+        <p class="text-cream font-mono text-xs text-center leading-relaxed">
+          data<br />
+          design<br />
+          coordination
+        </p>
+        <div class="w-8 h-px bg-sage-border/40 mt-3 mb-3"></div>
+        <p class="text-cream/60 font-mono text-[10px] text-center">
+          turn chaos into clarity
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CTA Buttons -->
+  <div class="flex flex-row gap-3 w-full max-w-xs justify-center">
+    <a 
+      href={resumeUrl} 
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn btn-primary btn-sm flex-1 rounded-full font-mono text-[11px] uppercase tracking-wider gap-1.5 text-surface border-0 hover:bg-forest-dark shadow-sm"
+    >
+      Resume
+    </a>
+    <a 
+      href={headshotUrl} 
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn btn-outline btn-sm flex-1 border-sage-border/50 text-sage-accent rounded-full font-mono text-[11px] uppercase tracking-wider gap-1.5 hover:bg-sage-accent hover:text-surface hover:border-sage-accent shadow-sm"
+    >
+      Headshot
+    </a>
+  </div>
+  
+  <!-- Social Connections -->
+  <div class="flex justify-center items-center gap-6 text-sage-muted mt-1">
+    <!-- Email -->
+    <a 
+      href="mailto:septaliaans@gmail.com" 
+      class="transition-all duration-300 hover:text-sage-accent hover:scale-110" 
+      aria-label="Email"
+    >
+      <svg class="w-5.5 h-5.5" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6.75h16a1.25 1.25 0 0 1 1.25 1.25v8a1.25 1.25 0 0 1-1.25 1.25H4A1.25 1.25 0 0 1 2.75 16v-8A1.25 1.25 0 0 1 4 6.75Zm0 0 8 5 8-5"></path>
+      </svg>
+    </a>
+    
+    <!-- GitHub -->
+    <a 
+      href="https://github.com/AlyaniNS" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="transition-all duration-300 hover:text-sage-accent hover:scale-110" 
+      aria-label="GitHub"
+    >
+      <svg class="w-5.5 h-5.5" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+        <path d="M12 .5c-6.35 0-11.5 5.16-11.5 11.53 0 5.09 3.34 9.4 7.98 10.92.58.11.8-.25.8-.56 0-.28-.01-1.02-.02-2.01-3.25.71-3.94-1.57-3.94-1.57-.53-1.37-1.3-1.73-1.3-1.73-1.06-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.04 1.79 2.73 1.27 3.4.97.11-.77.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.78 0-1.27.45-2.32 1.19-3.13-.12-.3-.52-1.49.11-3.11 0 0 .98-.31 3.2 1.2.93-.26 1.93-.39 2.92-.39.99 0 1.99.13 2.92.39 2.22-1.51 3.2-1.2 3.2-1.2.63 1.62.23 2.81.11 3.11.74.81 1.19 1.86 1.19 3.13 0 4.49-2.74 5.48-5.35 5.77.42.37.79 1.08.79 2.18 0 1.57-.01 2.83-.01 3.22 0 .31.21.68.81.56 4.64-1.52 7.96-5.83 7.96-10.92C23.5 5.66 18.35.5 12 .5Z"></path>
+      </svg>
+    </a>
+    
+    <!-- LinkedIn -->
+    <a 
+      href="https://linkedin.com/in/AlyaniNS" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="transition-all duration-300 hover:text-sage-accent hover:scale-110" 
+      aria-label="LinkedIn"
+    >
+      <svg class="w-5.5 h-5.5" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+        <path d="M20.45 20.45h-3.55v-5.56c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.93v5.66H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.23 0Z"></path>
+      </svg>
+    </a>
+  </div>
+</div>
+      
+      
+      <!-- Right Column: Narrative Bio (Direct grid sibling 2) -->
+      <div class="lg:col-span-7 order-2 lg:order-2 flex flex-col justify-center">
+<div class="prose text-sage-muted text-md leading-relaxed flex flex-col gap-4">
+  <p>I'm Alyani Septalia. I graduated from Mulawarman University with a degree in Computer Science, but my path has been a bit all over the place.</p>
+  
+  <div class="w-8 h-px bg-sage-border/40 my-1"></div>
+  
+  <p>For a few years, I spent most of my time coordinating international events. I was a buddy for international students, became Vice President of the program, and supported international events in campus. I took notes, documented everything, managed media, and made sure things ran smoothly. It was fun. But I noticed something along the way. All the information we handled was messy and scattered. I kept thinking there had to be a better way to organize it.</p>
+  
+  <div class="w-8 h-px bg-sage-border/40 my-1"></div>
+  
+  <p>That curiosity led me to data analytics. I started learning how to clean data, build pipelines, and create dashboards. It felt like solving puzzles. I enjoy taking raw numbers and turning them into something clear and useful. These days I work with Python, SQL, Power BI, Tableau, and Looker.</p>
+  
+</div>
+      </div>
+
+      <!-- Left Column: The Stack & Tools Section (Direct grid sibling 3) -->
+      <div class="lg:col-span-5 order-4 lg:order-3">
+        <section class="flex flex-col gap-6 w-full border-t border-sage-border/30 pt-6 lg:border-t-0 lg:pt-0">
+          <h2 class="text-xl font-mono uppercase tracking-wider text-forest-dark border-b border-sage-border/50 pb-2">
+            The Stack & Tools
+          </h2>
+          
+          <!-- Core Stack -->
+          <div class="flex flex-col gap-4">
+            <h3 class="font-mono text-xs text-sage-accent uppercase tracking-widest font-bold">Core Stack</h3>
+            <div class="flex flex-wrap gap-2">
+              {coreSkills.map((skill) => (
+                <span class="inline-flex items-center gap-2 bg-surface border border-sage-border/30 rounded-full px-3.5 py-1.5 shadow-xs hover:border-sage-accent transition-colors duration-300">
+                  <img src={skill.icon} alt={skill.label} class="w-3.5 h-3.5 object-contain" />
+                  <span class="text-xs font-mono text-sage-muted">{skill.label}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <!-- Secondary Stack -->
+          <div class="flex flex-col gap-4 mt-2">
+            <h3 class="font-mono text-xs text-sage-accent uppercase tracking-widest font-bold">Workflow & Systems</h3>
+            <div class="flex flex-wrap gap-2">
+              {secondarySkills.map((skill) => (
+                <span class="inline-flex items-center gap-2 bg-surface border border-sage-border/30 rounded-full px-3.5 py-1.5 shadow-xs hover:border-sage-accent transition-colors duration-300">
+                  <img src={skill.icon} alt={skill.label} class="w-3.5 h-3.5 object-contain" />
+                  <span class="text-xs font-mono text-sage-muted">{skill.label}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Education & Certifications (Direct grid sibling 4) -->
+      <div class="lg:col-span-7 order-3 lg:order-4 flex flex-col gap-10">
+        <!-- Education Section -->
+        <section class="flex flex-col gap-6">
+          <h2 class="text-xl font-mono uppercase tracking-wider text-forest-dark border-b border-sage-border/50 pb-2">
+            Education
+          </h2>
+          <div class="flex flex-col gap-8 relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[1px] before:bg-sage-border/60">
+            {education.map((edu) => (
+              <div class="flex flex-col gap-6 relative">
+                <!-- Main Education Node -->
+                <div class="flex items-start gap-4 relative group">
+                  <!-- Timeline point indicator -->
+                  <div class="absolute -left-[28px] top-5 w-2 h-2 rounded-full bg-sage-border border border-cream group-hover:bg-sage-accent transition-colors duration-300" />
+                  
+                  <div class="w-12 h-12 rounded-xl border border-sage-border/40 bg-surface flex items-center justify-center p-2.5 shadow-sm shrink-0">
+                    {edu.logo ? (
+                      <img src={edu.logo} alt={edu.institution} class="max-w-full max-h-full object-contain" />
+                    ) : (
+                      <svg class="w-6 h-6 text-sage-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    )}
+                  </div>
+                  <div class="flex flex-col">
+                    <h3 class="font-mono text-sm font-bold text-forest-dark leading-tight group-hover:text-sage-accent transition-colors duration-300">
+                      {edu.role}
+                    </h3>
+                    <span class="text-xs text-sage-muted mt-1">{edu.institution}</span>
+                    <span class="text-[11px] font-mono text-sage-accent mt-0.5">{edu.period}</span>
+                  </div>
+                </div>
+
+                <!-- Sub Items List -->
+                {edu.subItems && edu.subItems.length > 0 && (
+                  <div class="flex flex-col gap-6 mt-4 relative">
+                    {edu.subItems.map((sub, idx) => (
+                      <div class="flex items-start gap-4 relative group pl-6">
+                        <!-- L-connector branch -->
+                        <div class={`absolute -left-[24px] top-0 w-[1px] bg-sage-border/60 ${idx === edu.subItems.length - 1 ? 'h-5' : 'bottom-0'}`} />
+                        <div class="absolute -left-[24px] top-5 right-[calc(100%-16px)] h-[1px] bg-sage-border/60" />
+                        <div class="absolute left-[16px] top-5 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-sage-border border border-cream group-hover:bg-sage-accent transition-colors duration-300" />
+
+                        <!-- Sub Item Content -->
+                        <div class="w-10 h-10 rounded-lg border border-sage-border/40 bg-surface flex items-center justify-center p-2 shadow-xs shrink-0">
+                          {sub.logo ? (
+                            <img src={sub.logo} alt={sub.institution} class="max-w-full max-h-full object-contain" />
+                          ) : (
+                            <svg class="w-5 h-5 text-sage-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                          )}
+                        </div>
+                        <div class="flex flex-col">
+                          <h4 class="font-mono text-xs font-bold text-forest-dark leading-tight group-hover:text-sage-accent transition-colors duration-300">
+                            {sub.role}
+                          </h4>
+                          <span class="text-[11px] text-sage-muted mt-0.5">{sub.institution}</span>
+                          <span class="text-[10px] font-mono text-sage-accent mt-0.5">{sub.period}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Certifications Section -->
+        <section class="flex flex-col gap-6">
+          <h2 class="text-xl font-mono uppercase tracking-wider text-forest-dark border-b border-sage-border/50 pb-2">
+            Certifications
+          </h2>
+          <div class="flex flex-col gap-6">
+            {certifications.map((cert) => (
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl border border-sage-border/40 bg-surface flex items-center justify-center p-2.5 shadow-sm shrink-0">
+                  <img src={cert.logo} alt={cert.issuer} class="max-w-full max-h-full object-contain" />
+                </div>
+                <div class="flex flex-col">
+                  <h3 class="font-mono text-sm font-bold text-forest-dark leading-tight">{cert.title}</h3>
+                  <span class="text-xs text-sage-muted mt-1">{cert.issuer}</span>
+                  <span class="text-[11px] font-mono text-sage-accent mt-0.5">{cert.period}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .perspective-800 {
+    perspective: 800px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  /* Make sure the card container has explicit dimensions */
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .group:hover .card-inner {
+    transform: rotateY(180deg);
+  }
+</style>
+</Layout>

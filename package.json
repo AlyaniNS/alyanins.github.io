@@ -10,10 +10,9 @@
     "check": "astro check"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.8",
-    "@iconify/json": "^2.2.377",
+    "@astrojs/check": "^0.9.9",
     "astro": "^5.13.3",
-    "astro-icon": "^1.0.0"
+    "daisyui": "^4.12.24"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.3",

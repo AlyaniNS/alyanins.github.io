@@ -1,509 +1,207 @@
 ---
-import { getCollection } from "astro:content";
-import "../styles/home.css";
-import * as aboutData from "../data/about.md";
-
-const allProjects = (await getCollection("projects")).sort(
-  (a, b) =>
-    (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0) ||
-    a.data.order - b.data.order,
-);
-const dataProjects = allProjects.filter((p) =>
-  (p.data.category ?? "").toLowerCase().includes("data"),
-);
-const featuredProjects = dataProjects.slice(0, 4);
-
-/* ─── Skills ─────────────────────────────────────────────── */
-const coreSkills = [
-  {
-    label: "Python",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
-  },
-  {
-    label: "SQL",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
-  },
-  {
-    label: "Power BI",
-    icon: "/assets/icons/powerbi.png",
-  },
-  {
-    label: "Tableau",
-    icon: "/assets/icons/tableau.png",
-  },
-  { label: "Looker", icon: "https://cdn.simpleicons.org/looker/4285F4" },
-  {
-    label: "Jupyter\nNotebook",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original.svg",
-  },
-  { label: "Excel", icon: "/assets/icons/excel.png" },
-];
-
-const optionalSkills = [
-  {
-    label: "Git",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
-  },
-  { label: "Notion", icon: "https://cdn.simpleicons.org/notion/000000" },
-  {
-    label: "Figma",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
-  },
-];
-
-/* ─── Certifications ─────────────────────────────────────── */
-const certifications: Array<{ title: string; issuer: string; year?: string }> =
-  [
-    {
-      title: "Power BI Data Analyst Associate",
-      issuer: "Microsoft",
-      year: "2024",
-    },
-  ];
-
-/* ─── GitHub API fetch (build time, for projects without cover) ─── */
-const ghDataMap: Record<
-  string,
-  {
-    name: string;
-    full_name: string;
-    description: string | null;
-    stargazers_count: number;
-    language: string | null;
-  }
-> = {};
-
-const langColors: Record<string, string> = {
-  Python: "#3572A5",
-  JavaScript: "#f1e05a",
-  TypeScript: "#2b7489",
-  R: "#198CE7",
-  SQL: "#e38c00",
-  "Jupyter Notebook": "#DA5B0B",
-};
-
-const ghOgImage = (repoHref?: string) => {
-  if (!repoHref) return null;
-  const m = repoHref.match(/github\.com\/([^/]+\/[^/?#]+)/);
-  return m ? `https://opengraph.githubassets.com/1/${m[1]}` : null;
-};
-
-for (const p of featuredProjects) {
-  if (!p.data.cover) {
-    const href = p.data.ctaHref ?? p.data.repoHref;
-    if (href) {
-      const m = href.match(/github\.com\/([^/]+\/[^/?#]+)/);
-      if (m) {
-        try {
-          const res = await fetch(`https://api.github.com/repos/${m[1]}`, {
-            headers: {
-              Accept: "application/vnd.github.v3+json",
-              "User-Agent": "portfolio-build",
-            },
-          });
-          if (res.ok) ghDataMap[p.slug] = await res.json();
-        } catch {
-          /* silent fallback to OG image */
-        }
-      }
-    }
-  }
-}
-
-/* ─── Meta ────────────────────────────────────────────────── */
-const siteUrl = "https://alyanins.github.io/";
-const shareTitle = "Alyani Septalia | Portfolio";
-const shareDescription =
-  "Data analyst focused on turning messy data into clear, actionable insights.";
-const shareImage = `${siteUrl}assets/projects/global-plastic-waste-analytics.png`;
-const sharePayload = JSON.stringify({
-  title: shareTitle,
-  text: shareDescription,
-  url: siteUrl,
-});
-const shareScript = `if (navigator.share) { navigator.share(${sharePayload}); } else { navigator.clipboard.writeText(${JSON.stringify(siteUrl)}); }`;
-const cvUrl = "/assets/files/CV_Alyani Septalia.pdf";
+import Layout from "../layouts/Layout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <title>{shareTitle}</title>
-    <meta name="description" content={shareDescription} />
-    <!-- OG -->
-    <meta property="og:title" content={shareTitle} />
-    <meta property="og:description" content={shareDescription} />
-    <meta property="og:image" content={shareImage} />
-    <meta property="og:url" content={siteUrl} />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-  </head>
-  <body>
-    <main class="dashboard">
-      <!-- ─── Left column ─────────────────────────────────── -->
-      <section class="left-column">
-        <!-- Identity card -->
-        <div class="card identity-card">
-          <span class="profile-label">Portfolio</span>
-          <h1 class="profile-name">Alyani Septalia</h1>
-          <div class="about-prose">
-            <aboutData.Content />
-          </div>
+<Layout isHome={true} title="Alyani Septalia | Portfolio">
+  <div
+    class="min-h-[75vh] flex flex-col justify-center items-center w-full px-4 py-8"
+  >
+    <!-- Main Content Card -->
+    <div
+      id="hero-card"
+      class="bg-surface border border-sage-border/40 p-8 md:p-14 rounded-xl shadow-sm max-w-2xl w-full text-center transition-all duration-500 ease-out transform"
+    >
+      <!-- Brief Intro Paragraph -->
+      <p
+        class="text-sm md:text-base leading-relaxed text-sage-muted font-sans mb-6"
+      >
+        <span id="dynamic-greeting">Good day!</span><br />
+        <br />I'm <strong class="text-forest-dark font-bold">Alyani</strong>
+        <span class="text-xs text-sage-accent font-semibold font-mono"
+          >(she/her)</span
+        >, a Computer Science graduate from <a
+          href="https://unmul.ac.id/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold underline decoration-sage-accent/30 decoration-2 hover:text-sage-accent transition-colors"
+          >Mulawarman University</a
+        >. These days I work with data. Before that, I was into graphic design. I still do both when I can. I'm curious,
+        a bit particular about details, and always looking for a better way to
+        do things.
+      </p>
 
-          <div>
-            <span class="card-label">Education</span>
-            <div class="education-grid" style="display: flex; flex-direction: column; gap: 12px;">
-              <div class="education-item" style="flex-direction: row; align-items: flex-start; gap: 10px;">
-                <img src="/assets/icons/unmul.png" alt="UNMUL" width="30" style="flex-shrink:0" />
-                <div style="display:flex; flex-direction: column; gap: 2px;">
-                  <span class="education-title">Bachelor of Computer Science</span>
-                  <span class="education-meta">Universitas Mulawarman</span>
-                  <span class="education-meta">2020–2026</span>
-                </div>
-              </div>
-              <div class="education-item" style="flex-direction: row; align-items: flex-start; gap: 10px;">
-                <img src="/assets/icons/rakamin.png" alt="Rakamin" width="30" style="flex-shrink:0" />
-                <div style="display:flex; flex-direction: column; gap: 2px;">
-                  <span class="education-title">Data Science Bootcamp</span>
-                  <span class="education-meta">Rakamin Academy</span>
-                  <span class="education-meta">2023</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Bracket Navigation Links -->
+      <div
+        class="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs font-mono text-sage-accent mb-6 select-none leading-none"
+      >
+        <span
+          >[<a
+            href="/about"
+            class="hover:text-forest-dark transition-colors font-bold uppercase tracking-wider"
+            >about me</a
+          >]</span
+        >
+        <span
+          >[<a
+            href="/portfolio"
+            class="hover:text-forest-dark transition-colors font-bold uppercase tracking-wider"
+            >works</a
+          >]</span
+        >
+        <span
+          >[<a
+            href="/publications"
+            class="hover:text-forest-dark transition-colors font-bold uppercase tracking-wider"
+            >publications</a
+          >]</span
+        >
+      </div>
 
-          <div class="identity-meta">
-            <div class="identity-stats">
-              <div class="stat-block">
-                <strong>2+ YoE</strong>
-                <span>in Data</span>
-              </div>
-              <!-- <div class="stat-block">
-              <strong>{dataProjects.length}+</strong>
-              <span>Projects</span>
-            </div> -->
-            </div>
-            <div class="identity-connect">
-              <span class="connect-label">Connect</span>
-              <a
-                class="social-link"
-                href="mailto:septaliaans@gmail.com"
-                aria-label="Email"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"
-                  ><path
-                    d="M4 6.75h16a1.25 1.25 0 0 1 1.25 1.25v8a1.25 1.25 0 0 1-1.25 1.25H4A1.25 1.25 0 0 1 2.75 16v-8A1.25 1.25 0 0 1 4 6.75Zm0 0 8 5 8-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"></path></svg
-                >
-              </a>
-              <a
-                class="social-link"
-                href="https://github.com/AlyaniNS"
-                target="_blank"
-                rel="noopener"
-                aria-label="GitHub"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"
-                  ><path
-                    d="M12 .5c-6.35 0-11.5 5.16-11.5 11.53 0 5.09 3.34 9.4 7.98 10.92.58.11.8-.25.8-.56 0-.28-.01-1.02-.02-2.01-3.25.71-3.94-1.57-3.94-1.57-.53-1.37-1.3-1.73-1.3-1.73-1.06-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.04 1.79 2.73 1.27 3.4.97.11-.77.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.78 0-1.27.45-2.32 1.19-3.13-.12-.3-.52-1.49.11-3.11 0 0 .98-.31 3.2 1.2.93-.26 1.93-.39 2.92-.39.99 0 1.99.13 2.92.39 2.22-1.51 3.2-1.2 3.2-1.2.63 1.62.23 2.81.11 3.11.74.81 1.19 1.86 1.19 3.13 0 4.49-2.74 5.48-5.35 5.77.42.37.79 1.08.79 2.18 0 1.57-.01 2.83-.01 3.22 0 .31.21.68.81.56 4.64-1.52 7.96-5.83 7.96-10.92C23.5 5.66 18.35.5 12 .5Z"
-                    fill="currentColor"></path></svg
-                >
-              </a>
-              <a
-                class="social-link"
-                href="https://linkedin.com/in/AlyaniNS"
-                target="_blank"
-                rel="noopener"
-                aria-label="LinkedIn"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"
-                  ><path
-                    d="M20.45 20.45h-3.55v-5.56c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.93v5.66H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.23 0Z"
-                    fill="currentColor"></path></svg
-                >
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Certifications card -->
-        <div class="card certifications-card">
-          <span class="card-label">Certifications</span>
-          {
-            certifications.length > 0 ? (
-              <ul class="cert-list">
-                {certifications.map((cert) => (
-                  <li class="cert-item" style="flex-direction: row; align-items: flex-start; gap: 10px;">
-                    {cert.issuer === 'Microsoft' && (
-                      <img src="/assets/icons/microsoft.png" alt="Microsoft" width="24" style="flex-shrink:0; margin-top:2px;" />
-                    )}
-                    <div style="display:flex; flex-direction: column; gap: 2px;">
-                      <span class="cert-title">{cert.title}</span>
-                      <span class="cert-meta">
-                        {cert.issuer}
-                        {cert.year ? ` · ${cert.year}` : ""}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p class="cert-meta" style="font-style: italic;">
-                No certifications listed yet.
-              </p>
-            )
-          }
-        </div>
-
-        <!-- Skills card -->
-        <div class="card skills-card">
-          <span class="card-label">Skills</span>
-          <h2>The Stack</h2>
-          <div class="skills-icons">
-            {
-              coreSkills.map((s) => (
-                <div class="skills-icon" title={s.label}>
-                  <img src={s.icon} alt={s.label} loading="lazy" />
-                  <span>{s.label}</span>
-                </div>
-              ))
-            }
-          </div>
-          <div class="skills-optional">
-            {
-              optionalSkills.map((s) => (
-                <span class="opt-pill" title={s.label}>
-                  <img src={s.icon} alt={s.label} loading="lazy" />
-                  <span>{s.label}</span>
-                </span>
-              ))
-            }
-          </div>
-        </div>
-      </section>
-
-      <!-- ─── Right column ─────────────────────────────────── -->
-      <section class="right-column">
-        <div class="projects-header">
-          <h2>Recent Projects</h2>
-          <div class="action-buttons">
-            <button
-              class="icon-btn"
-              type="button"
-              aria-label="Share"
-              onclick={shareScript}
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true"
-                ><path
-                  d="M18 8.5a2.5 2.5 0 1 0-2.38-3.3l-7.07 3.6a2.5 2.5 0 1 0 0 4.4l7.07 3.6a2.5 2.5 0 1 0 .76-1.43l-7.07-3.6a2.5 2.5 0 0 0 0-1.84l7.07-3.6A2.49 2.49 0 0 0 18 8.5Z"
-                  fill="currentColor"></path></svg
-              >
-            </button>
-            <a class="icon-btn" href={cvUrl} download aria-label="Download CV">
-              <svg viewBox="0 0 24 24" aria-hidden="true"
-                ><path
-                  d="M7 8V3h10v5H7Zm10 8v5H7v-5h10Zm3-7H4a2 2 0 0 0-2 2v5h4v-3h12v3h4v-5a2 2 0 0 0-2-2Z"
-                  fill="currentColor"></path></svg
-              >
-            </a>
-          </div>
-        </div>
-
-        <div class="projects-grid">
-          {
-            featuredProjects.map((p) => {
-              const tags =
-                (p.data as any).tags?.length ? (p.data as any).tags : 
-                p.data.stack?.length ? p.data.stack : 
-                [p.data.category];
-              const modalId = `project-${p.slug}`;
-              const thumbSrc = p.data.cover ?? null; // GH OG image only used in modal
-              return (
-                <button
-                  class="project-card"
-                  type="button"
-                  data-modal-target={modalId}
-                  aria-haspopup="dialog"
-                  aria-controls={modalId}
-                >
-                  <div class="p-media">
-                    {thumbSrc ? (
-                      <img src={thumbSrc} alt={p.data.title} loading="lazy" />
-                    ) : (
-                      <div class="p-media-placeholder">Case Study</div>
-                    )}
-                  </div>
-                  <div class="p-body">
-                    <div class="p-tags">
-                      {tags.map((tag: string) => {
-                        const cleanItem = tag.toLowerCase().replace(" notebook", "");
-                        const found = [...coreSkills, ...optionalSkills].find(s => s.label.toLowerCase().startsWith(cleanItem));
-                        return (
-                          <span class="tag" style="display:flex; align-items:center; gap:4px;">
-                            {found?.icon && <img src={found.icon} alt={tag} width="12" height="12" style="object-fit:contain; opacity:0.8; filter:grayscale(30%);" />}
-                            {tag.toUpperCase()}
-                          </span>
-                        );
-                      })}
-                    </div>
-                    <h3>{p.data.title}</h3>
-                    <p>{p.data.description}</p>
-                  </div>
-                </button>
-              );
-            })
-          }
-        </div>
-
-
-      </section>
-    </main>
-
-    <!-- ─── Project modals ─────────────────────────────────── -->
-    {
-      featuredProjects.map((p) => {
-        const tags =
-          (p.data as any).tags?.length ? (p.data as any).tags : 
-          p.data.stack?.length ? p.data.stack : 
-          [p.data.category];
-        const modalId = `project-${p.slug}`;
-        const ghData = ghDataMap[p.slug];
-        const langColor = ghData?.language
-          ? (langColors[ghData.language] ?? "#888")
-          : "#888";
-
-        // Determine preview: cover → full image; else → GH card
-        const hasCover = !!p.data.cover;
-
-        // Determine CTA links
-        const primaryHref = p.data.repoHref ?? p.data.ctaHref;
-        const primaryLabel =
-          p.data.repoLabel ?? p.data.ctaLabel ?? "View Repository";
-        const secondaryHref = p.data.resultHref;
-        const secondaryLabel = p.data.resultLabel ?? "View Dashboard";
-
-        const ogImageUrl = !hasCover ? ghOgImage(primaryHref) : null;
-
-        return (
-          <dialog
-            id={modalId}
-            class="project-modal"
-            aria-labelledby={`${modalId}-title`}
+      <!-- Social Media Icons -->
+      <div class="flex justify-center items-center gap-6 text-sage-muted mb-6">
+        <!-- Email -->
+        <a
+          href="mailto:septaliaans@gmail.com"
+          class="transition-all duration-300 hover:text-sage-accent hover:scale-110"
+          aria-label="Email"
+        >
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <div class="modal-card">
-              {/* Preview panel — left, dark */}
-              <div class="modal-preview">
-                {hasCover || ogImageUrl ? (
-                  <div class="p-media-full">
-                    <img src={hasCover ? p.data.cover : ogImageUrl} alt={p.data.title} loading="lazy" style={hasCover ? "" : "transform: scale(1.05); transform-origin: center;"} />
-                  </div>
-                ) : (
-                  <div class="gh-card-wrapper" style="display:flex; align-items:center; justify-content:center; flex:1; padding:20px; text-align:center;">
-                    <span class="gh-stat-label">No preview available</span>
-                  </div>
-                )}
+            <path
+              d="M4 6.75h16a1.25 1.25 0 0 1 1.25 1.25v8a1.25 1.25 0 0 1-1.25 1.25H4A1.25 1.25 0 0 1 2.75 16v-8A1.25 1.25 0 0 1 4 6.75Zm0 0 8 5 8-5"
+            ></path>
+          </svg>
+        </a>
 
-                {/* Stack pills at bottom of preview */}
-                {p.data.stack && p.data.stack.length > 0 && (
-                  <div class="modal-stack-bar">
-                    {p.data.stack.map((item) => {
-                      const cleanItem = item.toLowerCase().replace(" notebook", "");
-                      const found = [...coreSkills, ...optionalSkills].find(s => s.label.toLowerCase().startsWith(cleanItem));
-                      return (
-                        <span class="modal-stack-pill">
-                          {found?.icon && <img src={found.icon} alt={item} />}
-                          {item}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+        <!-- GitHub -->
+        <a
+          href="https://github.com/AlyaniNS"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-all duration-300 hover:text-sage-accent hover:scale-110"
+          aria-label="GitHub"
+        >
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="currentColor"
+          >
+            <path
+              d="M12 .5c-6.35 0-11.5 5.16-11.5 11.53 0 5.09 3.34 9.4 7.98 10.92.58.11.8-.25.8-.56 0-.28-.01-1.02-.02-2.01-3.25.71-3.94-1.57-3.94-1.57-.53-1.37-1.3-1.73-1.3-1.73-1.06-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.04 1.79 2.73 1.27 3.4.97.11-.77.41-1.27.75-1.56-2.6-.3-5.33-1.3-5.33-5.78 0-1.27.45-2.32 1.19-3.13-.12-.3-.52-1.49.11-3.11 0 0 .98-.31 3.2 1.2.93-.26 1.93-.39 2.92-.39.99 0 1.99.13 2.92.39 2.22-1.51 3.2-1.2 3.2-1.2.63 1.62.23 2.81.11 3.11.74.81 1.19 1.86 1.19 3.13 0 4.49-2.74 5.48-5.35 5.77.42.37.79 1.08.79 2.18 0 1.57-.01 2.83-.01 3.22 0 .31.21.68.81.56 4.64-1.52 7.96-5.83 7.96-10.92C23.5 5.66 18.35.5 12 .5Z"
+            ></path>
+          </svg>
+        </a>
 
-              {/* Content panel — right, warm white */}
-              <div class="modal-content">
-                {/* Spec: plain ✕, no circle */}
-                <button
-                  class="modal-close"
-                  type="button"
-                  data-modal-close
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
+        <!-- LinkedIn -->
+        <a
+          href="https://linkedin.com/in/AlyaniNS"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-all duration-300 hover:text-sage-accent hover:scale-110"
+          aria-label="LinkedIn"
+        >
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            fill="currentColor"
+          >
+            <path
+              d="M20.45 20.45h-3.55v-5.56c0-1.33-.03-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.93v5.66H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.23 0Z"
+            ></path>
+          </svg>
+        </a>
+      </div>
 
-                <div class="modal-meta-row">
-                  {p.data.year && <span class="modal-year">{p.data.year}</span>}
-                </div>
+      <!-- Clocks Widget Dashboard -->
+      <div
+        class="flex justify-center items-center gap-6 pt-4 border-t border-sage-border/20 text-[10px] font-mono text-sage-muted select-none"
+      >
+        <div class="flex flex-col items-center">
+          <span
+            class="text-[8px] uppercase tracking-wider text-sage-accent font-semibold mb-0.5"
+            >Your Local Time</span
+          >
+          <span
+            id="visitor-time"
+            class="text-xs font-bold text-forest-dark tabular-nums"
+            >--:--:--</span
+          >
+        </div>
+        <div class="h-6 w-px bg-sage-border/30"></div>
+        <div class="flex flex-col items-center">
+          <span
+            class="text-[8px] uppercase tracking-wider text-forest-dark font-semibold mb-0.5"
+            >My Time (GMT+8)</span
+          >
+          <span
+            id="my-time"
+            class="text-xs font-bold text-forest-dark tabular-nums"
+            >--:--:--</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
 
-                <h3 id={`${modalId}-title`}>{p.data.title}</h3>
+<script is:inline>
+  function updateClocks() {
+    const visitorTimeEl = document.getElementById("visitor-time");
+    const myTimeEl = document.getElementById("my-time");
+    if (!visitorTimeEl || !myTimeEl) return;
 
-                <p class="modal-description">{p.data.description}</p>
+    const now = new Date();
 
-                {/* 2-column button row */}
-                <div class="modal-actions">
-                  {primaryHref && (
-                    <a
-                      class="btn-outline"
-                      href={primaryHref}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {primaryLabel} ↗
-                    </a>
-                  )}
-                  {secondaryHref && (
-                    <a
-                      class="btn-outline"
-                      href={secondaryHref}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {secondaryLabel} ↗
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </dialog>
-        );
-      })
+    // Visitor Local Time format
+    const options = {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    visitorTimeEl.textContent = now.toLocaleTimeString(undefined, options);
+
+    // My Time (GMT+8)
+    const myTimeStr = now.toLocaleTimeString("en-US", {
+      timeZone: "Asia/Makassar",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    myTimeEl.textContent = myTimeStr;
+  }
+
+  function setDynamicGreeting() {
+    const greetingEl = document.getElementById("dynamic-greeting");
+    if (!greetingEl) return;
+    const hours = new Date().getHours();
+    let greeting = "Good day!";
+    if (hours >= 5 && hours < 12) {
+      greeting = "Good morning!";
+    } else if (hours >= 12 && hours < 17) {
+      greeting = "Good afternoon!";
+    } else if (hours >= 17 && hours < 22) {
+      greeting = "Good evening!";
+    } else {
+      greeting = "Good day!";
     }
+    greetingEl.textContent = greeting;
+  }
 
-    <script is:inline>
-      const openButtons = document.querySelectorAll("[data-modal-target]");
-      const closeButtons = document.querySelectorAll("[data-modal-close]");
-
-      openButtons.forEach((button) => {
-        const target = button.getAttribute("data-modal-target");
-        if (!target) return;
-        const dialog = document.getElementById(target);
-        if (!dialog) return;
-        button.addEventListener("click", () => dialog.showModal());
-      });
-
-      closeButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          const dialog = button.closest("dialog");
-          if (dialog) dialog.close();
-        });
-      });
-
-      document.querySelectorAll("dialog").forEach((dialog) => {
-        dialog.addEventListener("click", (event) => {
-          if (event.target === dialog) dialog.close();
-        });
-      });
-    </script>
-  </body>
-</html>
+  document.addEventListener("DOMContentLoaded", () => {
+    setDynamicGreeting();
+    updateClocks();
+    setInterval(updateClocks, 1000);
+  });
+</script>

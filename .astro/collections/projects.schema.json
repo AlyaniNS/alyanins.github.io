@@ -8,51 +8,84 @@
           "type": "string"
         },
         "description": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "ctaLabel": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "ctaHref": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "repoLabel": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "repoHref": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "resultLabel": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "resultHref": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cover": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "featured": {
           "type": "boolean",
           "default": false
         },
-        "order": {
-          "type": "number",
-          "default": 0
-        },
         "year": {
-          "type": "number"
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "stack": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "category": {
           "type": "string"
         },
         "details": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "$schema": {
           "type": "string"
@@ -60,7 +93,6 @@
       },
       "required": [
         "title",
-        "description",
         "category"
       ],
       "additionalProperties": false

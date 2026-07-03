@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Page Not Found | Alyani Septalia"
+  description="The page you are looking for could not be found."
+>
+  <section class="min-h-[58vh] w-full flex items-center justify-center">
+    <div class="w-full max-w-2xl text-center flex flex-col items-center gap-6">
+      <p class="font-mono text-xs uppercase tracking-widest text-sage-accent">
+        404
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <h1 class="text-3xl md:text-4xl font-mono uppercase tracking-wide text-forest-dark">
+          page not found
+        </h1>
+        <p class="text-sm md:text-base text-sage-muted max-w-xl">
+          This link may have moved, or the page may no longer exist.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-3 pt-2">
+        <a
+          href="/"
+          class="btn btn-primary btn-sm rounded-full font-mono text-[11px] uppercase tracking-wider text-surface border-0 hover:bg-forest-dark shadow-sm"
+        >
+          Back home
+        </a>
+        <a
+          href="/portfolio"
+          class="btn btn-outline btn-sm border-sage-border/50 text-sage-accent rounded-full font-mono text-[11px] uppercase tracking-wider hover:bg-sage-accent hover:text-surface hover:border-sage-accent shadow-sm"
+        >
+          View works
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

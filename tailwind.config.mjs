@@ -1,44 +1,44 @@
+import daisyui from 'daisyui';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   theme: {
     extend: {
       fontFamily: {
-        'inter': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        'sans': ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        'mono': ['"Geist Mono"', 'monospace', 'Courier New', 'Courier'],
       },
       colors: {
-        brand: {
-          50: '#eff6ff',
-          100: '#dbeafe', 
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a'
-        },
-        navy: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a'
-        }
+        cream: '#F4F3EE',
+        surface: '#FCFBF8',
+        'forest-dark': '#26352D',
+        'sage-muted': '#4C5C53',
+        'sage-accent': '#5F7A61',
+        'sage-border': '#D9DDD5',
       },
       boxShadow: { 
-        soft: '0 8px 30px rgba(59, 130, 246, 0.08)',
-        'soft-dark': '0 8px 30px rgba(0, 0, 0, 0.3)'
+        soft: '0 2px 12px rgba(38, 53, 45, 0.04)',
+        'soft-dark': '0 2px 12px rgba(0, 0, 0, 0.15)'
       },
       borderRadius: { '2xl': '1.25rem' }
     }
   },
   darkMode: 'class',
-  plugins: []
+  plugins: [daisyui],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          "primary": "#5F7A61",
+          "secondary": "#26352D",
+          "accent": "#4C5C53",
+          "neutral": "#26352D",
+          "base-100": "#FCFBF8",
+          "base-200": "#F4F3EE",
+        },
+      },
+    ],
+  },
 }
+
