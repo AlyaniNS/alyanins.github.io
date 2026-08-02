@@ -1,10 +1,10 @@
 [
     {
-    "title": "Klasifikasi Kode Resin Pada Kemasan Plastik Menggunakan Few-Shot Learning",
-    "publisher": "Thesis | Universitas Mulawarman",
-    "date": "April 2026",
+    "title": "Resin Code Classification on Plastic Packaging Using Few-Shot Learning",
+    "publisher": "Indonesian Journal of Data and Science (IJODAS)",
+    "date": "July 2026",
     "description": "Proposes a few-shot learning approach for classifying Resin Identification Codes (RIC) on plastic packaging using a Prototypical Network. The model is trained on a limited dataset of seven plastic categories (PET, HDPE, PVC, LDPE, PP, PS, OTHER) using episodic 7-way 5-shot learning and evaluated across different backbone architectures. Results show EfficientNet-B2 achieves the best performance, demonstrating strong effectiveness for plastic waste classification under low-data conditions and supporting automated recycling systems.",
-    "url": "https://digilib.unmul.ac.id/index.php?p=show_detail&id=57689"
+    "url": "https://jurnal.yoctobrain.org/index.php/ijodas/article/view/406"
   },
   {
     "title": "Exploring Digital Forensic and Evidence Research Trends: A Comprehensive Data Analysis",

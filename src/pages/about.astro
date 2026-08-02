@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { getTechIconUrl } from "../utils/icons";
 
 const resumeUrl = "https://drive.google.com/file/d/1ebZUsw1ylfhqDaDfG-9bqZbrOFDf9OlH/view?usp=sharing";
 const headshotUrl = "https://drive.google.com/file/d/1oE4wcI-QvgA7Au4mdu3FcSeF6Eztj5sB/view?usp=sharing";
@@ -37,49 +38,19 @@ const certifications = [
 ];
 
 const coreSkills = [
-  {
-    label: "Python",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
-  },
-  {
-    label: "SQL",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
-  },
-  {
-    label: "Power BI",
-    icon: "/assets/icons/powerbi.png",
-  },
-  {
-    label: "Tableau",
-    icon: "/assets/icons/tableau.png",
-  },
-  {
-    label: "Looker",
-    icon: "https://cdn.simpleicons.org/looker/4285F4",
-  },
-  {
-    label: "Jupyter Notebook",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original.svg",
-  },
-  {
-    label: "Excel",
-    icon: "/assets/icons/excel.png",
-  },
+  "Python",
+  "SQL",
+  "Power BI",
+  "Tableau",
+  "Looker",
+  "Jupyter Notebook",
+  "Excel",
 ];
 
 const secondarySkills = [
-  {
-    label: "Git",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
-  },
-  {
-    label: "Notion",
-    icon: "https://cdn.simpleicons.org/notion/000000",
-  },
-  {
-    label: "Figma",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
-  },
+  "Git",
+  "Notion",
+  "Figma",
 ];
 ---
 
@@ -124,10 +95,6 @@ const secondarySkills = [
           data<br />
           design<br />
           coordination
-        </p>
-        <div class="w-8 h-px bg-sage-border/40 mt-3 mb-3"></div>
-        <p class="text-cream/60 font-mono text-[10px] text-center">
-          turn chaos into clarity
         </p>
       </div>
     </div>
@@ -198,16 +165,8 @@ const secondarySkills = [
       <!-- Right Column: Narrative Bio (Direct grid sibling 2) -->
       <div class="lg:col-span-7 order-2 lg:order-2 flex flex-col justify-center">
 <div class="prose text-sage-muted text-md leading-relaxed flex flex-col gap-4">
-  <p>I'm Alyani Septalia. I graduated from Mulawarman University with a degree in Computer Science, but my path has been a bit all over the place.</p>
-  
-  <div class="w-8 h-px bg-sage-border/40 my-1"></div>
-  
-  <p>For a few years, I spent most of my time coordinating international events. I was a buddy for international students, became Vice President of the program, and supported international events in campus. I took notes, documented everything, managed media, and made sure things ran smoothly. It was fun. But I noticed something along the way. All the information we handled was messy and scattered. I kept thinking there had to be a better way to organize it.</p>
-  
-  <div class="w-8 h-px bg-sage-border/40 my-1"></div>
-  
-  <p>That curiosity led me to data analytics. I started learning how to clean data, build pipelines, and create dashboards. It felt like solving puzzles. I enjoy taking raw numbers and turning them into something clear and useful. These days I work with Python, SQL, Power BI, Tableau, and Looker.</p>
-  
+  <p> </p>Hey, I'm Alyani! I'm a Computer Science graduate from Mulawarman University, Indonesia. My tech journey is a mix of two worlds, started with a passion for graphic design before diving into engineering and data analytics. Along the way, I spent a few years coordinating international programs as a student buddy, accompanying international guests, leading small groups, and eventually growing into a leadership role managing media and event documentation. Because of this, I love bridging the gap between clean visuals, people, and complex data
+</p>
 </div>
       </div>
 
@@ -224,8 +183,8 @@ const secondarySkills = [
             <div class="flex flex-wrap gap-2">
               {coreSkills.map((skill) => (
                 <span class="inline-flex items-center gap-2 bg-surface border border-sage-border/30 rounded-full px-3.5 py-1.5 shadow-xs hover:border-sage-accent transition-colors duration-300">
-                  <img src={skill.icon} alt={skill.label} class="w-3.5 h-3.5 object-contain" />
-                  <span class="text-xs font-mono text-sage-muted">{skill.label}</span>
+                  <img src={getTechIconUrl(skill)} alt={skill} class="w-3.5 h-3.5 object-contain" />
+                  <span class="text-xs font-mono text-sage-muted">{skill}</span>
                 </span>
               ))}
             </div>
@@ -237,8 +196,8 @@ const secondarySkills = [
             <div class="flex flex-wrap gap-2">
               {secondarySkills.map((skill) => (
                 <span class="inline-flex items-center gap-2 bg-surface border border-sage-border/30 rounded-full px-3.5 py-1.5 shadow-xs hover:border-sage-accent transition-colors duration-300">
-                  <img src={skill.icon} alt={skill.label} class="w-3.5 h-3.5 object-contain" />
-                  <span class="text-xs font-mono text-sage-muted">{skill.label}</span>
+                  <img src={getTechIconUrl(skill)} alt={skill} class="w-3.5 h-3.5 object-contain" />
+                  <span class="text-xs font-mono text-sage-muted">{skill}</span>
                 </span>
               ))}
             </div>
